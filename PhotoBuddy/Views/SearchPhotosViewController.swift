@@ -24,14 +24,22 @@ class SearchPhotosViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureSearchController()
         dataSource = configureDataSource()
         imageListView.collectionView.dataSource = dataSource
         imageListView.collectionView.collectionViewLayout = createLayout()
-        imageListView.searchBar.delegate = self
         searchResultsViewModel.cellViewModels.bind { [weak self] items in
             self?.applySnapshot(with: items)
         }
         
+    }
+    
+    func configureSearchController() {
+        let searchController = UISearchController()
+        searchController.searchBar.delegate = self
+        searchController.automaticallyShowsCancelButton = false
+        searchController.automaticallyShowsSearchResultsController = false
+        self.navigationItem.searchController = searchController
     }
     
     override func loadView() {
