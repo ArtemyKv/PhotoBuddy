@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ImageListViewController: UIViewController {
+class SearchPhotosViewController: UIViewController {
     typealias DataSourceType = UICollectionViewDiffableDataSource<Section, CellViewModel>
     
     var dataSource: DataSourceType!
@@ -31,7 +31,7 @@ class ImageListViewController: UIViewController {
         searchResultsViewModel.cellViewModels.bind { [weak self] items in
             self?.applySnapshot(with: items)
         }
-        searchResultsViewModel.searchPhotos(searchTerm: "cat")
+        
     }
     
     override func loadView() {
@@ -81,13 +81,13 @@ class ImageListViewController: UIViewController {
     }
 }
 
-extension ImageListViewController: UICollectionViewDelegate {
+extension SearchPhotosViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
     }
 }
 
-extension ImageListViewController: UISearchBarDelegate {
+extension SearchPhotosViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.searchResultsViewModel.searchPhotos(searchTerm: searchBar.text ?? "")
     }
