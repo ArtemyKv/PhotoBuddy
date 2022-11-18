@@ -21,12 +21,23 @@ class SearchResultsViewModel {
     
     var cellViewModels = Box<[CellViewModel]>(value: [])
     
+    func detailInfoViewModel(forPhotoAt indexPath: IndexPath) -> DetailInfoViewModel {
+        let photoInfo = photoInfoList[indexPath.row]
+        let viewModel = DetailInfoViewModel(
+            photoID: photoInfo.id,
+            blurHash: photoInfo.blurHash,
+            photoFetchingManager: self.photoFetchingManager
+        )
+        return viewModel
+    }
+    
     func searchPhotos(searchTerm: String) {
-        photoFetchingManager.fetchSearchPhotoInfo(searchTerm: searchTerm) { [weak self] photoInfoList, error in
-            guard let photoInfoList = photoInfoList else {
+        photoFetchingManager.fetchSearchPhotoInfo(searchTerm: searchTerm) { [weak self] photoResponse, error in
+            guard let photoInfoList = photoResponse?.photoInfos else {
                 self?.presentAlert(withError: error!)
                 return
             }
+            self?.photoInfoList = photoInfoList
             self?.createCellViewModels(withPhotoInfoList: photoInfoList)
         }
     }

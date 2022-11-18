@@ -11,14 +11,20 @@ struct BriefPhotoInfo: Codable {
     var id: String
     var blurHash: String
     var url: URL
+    var authorName: String
     
     enum CodingKeys: String ,CodingKey {
         case id
         case blurHash = "blur_hash"
         case url = "urls"
+        case authorName = "user"
         
         enum URLCodingKeys: String, CodingKey {
             case url = "thumb"
+        }
+        
+        enum UserCodingKeys: String, CodingKey {
+            case name
         }
     }
     
@@ -27,8 +33,10 @@ struct BriefPhotoInfo: Codable {
         
         self.id = try container.decode(String.self, forKey: .id)
         self.blurHash = try container.decode(String.self, forKey: .blurHash)
-        let nestedContainer = try container.nestedContainer(keyedBy: CodingKeys.URLCodingKeys.self, forKey: .url)
-        self.url = try nestedContainer.decode(URL.self, forKey: .url)
+        let urlNestedContainer = try container.nestedContainer(keyedBy: CodingKeys.URLCodingKeys.self, forKey: .url)
+        self.url = try urlNestedContainer.decode(URL.self, forKey: .url)
+        let userNestedContainer = try container.nestedContainer(keyedBy: CodingKeys.UserCodingKeys.self, forKey: .authorName)
+        self.authorName = try userNestedContainer.decode(String.self, forKey: .name)
     }
 }
 

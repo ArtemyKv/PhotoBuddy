@@ -24,6 +24,7 @@ class PhotoFetchingManager {
     private enum Endpoint: String {
         case search = "/search/photos"
         case randomPhotos = "/photos/random"
+        case photoDetail = "/photos"
     }
     
     private var imageDownloadingTasks: [URL: URLSessionDataTask] = [:]
@@ -33,11 +34,14 @@ class PhotoFetchingManager {
         return cachedImages.object(forKey: urlString)
     }
     
-    private func urlRequest(endpoint: Endpoint, queries: [String: String]) -> URLRequest {
+    private func urlRequest(endpoint: Endpoint, queries: [String: String], photoID: String? = nil) -> URLRequest {
         var components = URLComponents()
         components.scheme = scheme
         components.host = host
         components.path = endpoint.rawValue
+        if photoID != nil {
+            components.path += "/\(photoID!)"
+        }
         components.queryItems = queries.compactMap { URLQueryItem(name: $0.key, value: $0.value) }
         
         var request = URLRequest(url: components.url!)
@@ -45,7 +49,7 @@ class PhotoFetchingManager {
         return request
     }
     
-    func fetchSearchPhotoInfo(searchTerm: String, page: Int = 1, completion: @escaping ([BriefPhotoInfo]?, PhotosFetchingError?) -> (Void) ) {
+    func fetchSearchPhotoInfo(searchTerm: String, page: Int = 1, completion: @escaping (PhotosResponse?, PhotosFetchingError?) -> (Void) ) {
         imageDownloadingTasks = [:]
         
         let queriesDict = [
@@ -54,8 +58,19 @@ class PhotoFetchingManager {
             "page": "\(page)",
             "per_page": "30"
         ]
-        
         let request = urlRequest(endpoint: Endpoint.search, queries: queriesDict)
+        self.fetchPhotoInfo(request: request, completion: completion)
+    }
+    
+    func fetchDetailPhotoInfo(photoID: String, completion: @escaping (DetailPhotoInfo?, PhotosFetchingError?) -> (Void)) {
+        let queriesDict = [
+            "client_id": "\(apiKey)"
+        ]
+        let request = urlRequest(endpoint: .photoDetail, queries: queriesDict, photoID: photoID)
+        self.fetchPhotoInfo(request: request, completion: completion)
+    }
+    
+    func fetchPhotoInfo<T: Codable>(request: URLRequest, completion: @escaping (T?, PhotosFetchingError?) -> (Void) ) {
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             DispatchQueue.main.async {
@@ -85,9 +100,8 @@ class PhotoFetchingManager {
                 
                 do {
                     let decoder = JSONDecoder()
-                    let photoResponse = try decoder.decode(PhotosResponse.self, from: data)
-                    completion(photoResponse.photoInfos, nil)
-                    print("Success!")
+                    let decodedInfo = try decoder.decode(T.self, from: data)
+                    completion(decodedInfo, nil)
                 } catch {
                     print("Invalid data")
                     completion(nil, .invalidData)

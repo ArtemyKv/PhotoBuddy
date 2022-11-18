@@ -26,6 +26,7 @@ class SearchPhotosViewController: UIViewController {
         super.viewDidLoad()
         configureSearchController()
         dataSource = configureDataSource()
+        imageListView.collectionView.delegate = self
         imageListView.collectionView.dataSource = dataSource
         imageListView.collectionView.collectionViewLayout = createLayout()
         searchResultsViewModel.cellViewModels.bind { [weak self] items in
@@ -91,7 +92,10 @@ class SearchPhotosViewController: UIViewController {
 
 extension SearchPhotosViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        self.imageListView.collectionView.deselectItem(at: indexPath, animated: true)
+        let detailInfoViewModel = searchResultsViewModel.detailInfoViewModel(forPhotoAt: indexPath)
+        let detailInfoVC = DetailInfoViewController(viewModel: detailInfoViewModel)
+        self.navigationController?.pushViewController(detailInfoVC, animated: true)
     }
 }
 

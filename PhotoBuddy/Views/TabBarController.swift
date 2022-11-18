@@ -13,7 +13,6 @@ class TabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         createChildControllers()
-        self.tabBar.isTranslucent = false
         self.tabBar.tintColor = .label
         self.tabBar.backgroundColor = .systemBackground
 
