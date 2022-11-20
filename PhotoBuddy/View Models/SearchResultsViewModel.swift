@@ -15,9 +15,12 @@ class SearchResultsViewModel {
     
     weak var delegate: SearchResultsViewModelDelegate?
     
-    var photoFetchingManager = PhotoFetchingManager()
+    private var photoFetchingManager = PhotoFetchingManager()
     
-    var photoInfoList: [BriefPhotoInfo] = []
+    private var photoInfoList: [BriefPhotoInfo] = []
+    private var numberOfPages: Int = 0
+    private var currentPage: Int = 0
+    private var currentSearchTerm: String = ""
     
     var cellViewModels = Box<[CellViewModel]>(value: [])
     
@@ -31,18 +34,29 @@ class SearchResultsViewModel {
         return viewModel
     }
     
-    func searchPhotos(searchTerm: String) {
-        photoFetchingManager.fetchSearchPhotoInfo(searchTerm: searchTerm) { [weak self] photoResponse, error in
-            guard let photoInfoList = photoResponse?.photoInfos else {
+    func searchPhotos(searchTerm: String, completion: @escaping () -> Void) {
+        guard !(searchTerm == currentSearchTerm && currentPage >= numberOfPages) else { return }
+        if searchTerm != currentSearchTerm {
+            currentPage = 1
+            currentSearchTerm = searchTerm
+            self.photoInfoList = []
+            self.cellViewModels.value = []
+        } else {
+            currentPage += 1
+        }
+        photoFetchingManager.fetchSearchPhotoInfo(searchTerm: searchTerm, page: currentPage) { [weak self] photoResponse, error in
+            guard let photoResponse = photoResponse, let photoInfoList = photoResponse.photoInfos else {
                 self?.presentAlert(withError: error!)
                 return
             }
-            self?.photoInfoList = photoInfoList
+            self?.numberOfPages = photoResponse.totalPages
+            self?.photoInfoList.append(contentsOf: photoInfoList)
             self?.createCellViewModels(withPhotoInfoList: photoInfoList)
+            completion()
         }
     }
     
-    func fetchImages(forCellViewModel cellViewModel: CellViewModel) {
+    func fetchImage(forCellViewModel cellViewModel: CellViewModel) {
         let imageUrl = cellViewModel.photoInfo.url
         self.photoFetchingManager.downloadPhoto(url: imageUrl) { image in
             cellViewModel.photo.value = image
@@ -54,7 +68,6 @@ class SearchResultsViewModel {
     }
     
     private func createCellViewModels(withPhotoInfoList list: [BriefPhotoInfo]) {
-        cellViewModels.value = []
         for photoInfo in list {
             let cellViewModel = CellViewModel(photoInfo: photoInfo)
             cellViewModels.value.append(cellViewModel)

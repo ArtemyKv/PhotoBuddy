@@ -12,6 +12,7 @@ class SearchPhotosViewController: UIViewController {
     
     var dataSource: DataSourceType!
     var searchResultsViewModel = SearchResultsViewModel()
+    private var isWaitingForNextPage = true
     
     enum Section {
         case main
@@ -53,7 +54,7 @@ class SearchPhotosViewController: UIViewController {
             cellViewModel.photo.bind { image in
                 cell.photoView.image = image
             }
-            self.searchResultsViewModel.fetchImages(forCellViewModel: cellViewModel)
+            self.searchResultsViewModel.fetchImage(forCellViewModel: cellViewModel)
         }
         return cellRegistration
     }
@@ -97,11 +98,25 @@ extension SearchPhotosViewController: UICollectionViewDelegate {
         let detailInfoVC = DetailInfoViewController(viewModel: detailInfoViewModel)
         self.navigationController?.pushViewController(detailInfoVC, animated: true)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard indexPath.row == searchResultsViewModel.cellViewModels.value.count - 1 && isWaitingForNextPage else { return }
+        let searchTerm = self.navigationItem.searchController?.searchBar.text ?? ""
+        isWaitingForNextPage = false
+        let workItem = DispatchWorkItem {
+            self.searchResultsViewModel.searchPhotos(searchTerm: searchTerm) { [weak self] in
+                self?.isWaitingForNextPage = true
+            }
+        }
+        DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + 1, execute: workItem)
+    }
 }
 
 extension SearchPhotosViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        self.searchResultsViewModel.searchPhotos(searchTerm: searchBar.text ?? "")
+        self.searchResultsViewModel.searchPhotos(searchTerm: searchBar.text ?? "") { [weak self] in
+            self?.isWaitingForNextPage = true
+        }
     }
 }
 

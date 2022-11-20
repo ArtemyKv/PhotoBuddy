@@ -27,6 +27,7 @@ class PhotoFetchingManager {
         case photoDetail = "/photos"
     }
     
+    private var semaphore = DispatchSemaphore(value: 10)
     private var imageDownloadingTasks: [URL: URLSessionDataTask] = [:]
     private var cachedImages = NSCache<NSString, UIImage>()
     
@@ -120,8 +121,11 @@ class PhotoFetchingManager {
         let request = URLRequest(url: url)
         imageDownloadingTasks[url] = nil
         imageDownloadingTasks[url] = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            self?.semaphore.wait()
             defer {
                 self?.imageDownloadingTasks[url] = nil
+                self?.semaphore.signal()
+                print("deffered!")
             }
             
             guard error == nil else {
