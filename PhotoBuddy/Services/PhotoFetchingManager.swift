@@ -101,6 +101,7 @@ class PhotoFetchingManager {
                 
                 do {
                     let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
                     let decodedInfo = try decoder.decode(T.self, from: data)
                     completion(decodedInfo, nil)
                 } catch {
@@ -125,7 +126,6 @@ class PhotoFetchingManager {
             defer {
                 self?.imageDownloadingTasks[url] = nil
                 self?.semaphore.signal()
-                print("deffered!")
             }
             
             guard error == nil else {

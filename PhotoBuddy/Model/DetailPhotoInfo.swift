@@ -9,7 +9,7 @@ import Foundation
 
 struct DetailPhotoInfo: Codable {
     var id: String
-    var creationDate: String
+    var creationDate: Date
     var downloads: Int
     var description: String?
     var location: Location
@@ -37,7 +37,7 @@ struct DetailPhotoInfo: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
-        self.creationDate = try container.decode(String.self, forKey: .creationDate)
+        self.creationDate = try container.decode(Date.self, forKey: .creationDate)
         self.downloads = try container.decode(Int.self, forKey: .downloads)
         self.description = try container.decode(String.self, forKey: .description)
         self.location = try container.decode(Location.self, forKey: .location)
