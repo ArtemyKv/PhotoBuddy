@@ -8,7 +8,17 @@
 import Foundation
 import UIKit
 
-class DetailInfoView: UIView {
+protocol PhotoDetailsViewDelegate: AnyObject {
+    
+    func toggleFavoritesButtonPressed()
+    
+    func infoButtonPressed()
+}
+
+class PhotoDetailsView: UIView {
+    
+    weak var delegate: PhotoDetailsViewDelegate?
+    
     let imageScrollView: ImageScrollView = {
         let scrollView = ImageScrollView()
         scrollView.backgroundColor = .white
@@ -39,6 +49,11 @@ class DetailInfoView: UIView {
         self.addSubview(infoButton)
         self.addSubview(toggleFavoritesButton)
         
+        setupConstraints()
+        setupButtonActions()
+    }
+    
+    func setupConstraints() {
         imageScrollView.translatesAutoresizingMaskIntoConstraints = false
         infoButton.translatesAutoresizingMaskIntoConstraints = false
         toggleFavoritesButton.translatesAutoresizingMaskIntoConstraints = false
@@ -59,6 +74,19 @@ class DetailInfoView: UIView {
             
             
         ])
+    }
+    
+    func setupButtonActions() {
+        toggleFavoritesButton.addTarget(self, action: #selector(buttonPressed(sender:)), for: .touchUpInside)
+        infoButton.addTarget(self, action: #selector(buttonPressed(sender:)), for: .touchUpInside)
+    }
+    
+    @objc func buttonPressed(sender: UIButton) {
+        if sender == infoButton {
+            delegate?.infoButtonPressed()
+        } else if sender == toggleFavoritesButton {
+            delegate?.toggleFavoritesButtonPressed()
+        }
     }
     
     override init(frame: CGRect) {

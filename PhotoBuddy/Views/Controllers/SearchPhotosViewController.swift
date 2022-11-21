@@ -95,7 +95,7 @@ extension SearchPhotosViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.imageListView.collectionView.deselectItem(at: indexPath, animated: true)
         let detailInfoViewModel = searchResultsViewModel.detailInfoViewModel(forPhotoAt: indexPath)
-        let detailInfoVC = DetailInfoViewController(viewModel: detailInfoViewModel)
+        let detailInfoVC = PhotoDetailsViewController(viewModel: detailInfoViewModel)
         self.navigationController?.pushViewController(detailInfoVC, animated: true)
     }
     

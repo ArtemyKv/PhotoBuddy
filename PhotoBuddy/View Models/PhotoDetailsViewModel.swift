@@ -8,7 +8,7 @@
 import Foundation
 import UIKit.UIImage
 
-class DetailInfoViewModel {
+class PhotoDetailsViewModel {
     //View model properties
     private var photoFetchingManager: PhotoFetchingManager
     private var photoID: String
@@ -19,11 +19,8 @@ class DetailInfoViewModel {
             self.image.value = photo
         }
     }
-    private var detailPhotoInfo: DetailPhotoInfo? {
-        didSet {
-            //TODO: - add code
-        }
-    }
+    
+    let photoInfoViewModel = PhotoInfoViewModel()
     
     //View properties
     var image: Box<UIImage?> = Box(value: nil)
@@ -43,14 +40,11 @@ class DetailInfoViewModel {
                 //TODO: - present alert with error
                 return
             }
-            self?.detailPhotoInfo = info
+            self?.photoInfoViewModel.detailPhotoInfo = info
             self?.photoFetchingManager.downloadPhoto(url: info.photoURL, completion: { photo in
                 self?.photo = photo
             })
         }
     }
     
-    func configureDetailPhotoInfo(with: DetailPhotoInfo) {
-        //TODO: - implement method
-    }
 }

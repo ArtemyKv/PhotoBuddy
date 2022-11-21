@@ -24,9 +24,9 @@ class SearchResultsViewModel {
     
     var cellViewModels = Box<[CellViewModel]>(value: [])
     
-    func detailInfoViewModel(forPhotoAt indexPath: IndexPath) -> DetailInfoViewModel {
+    func detailInfoViewModel(forPhotoAt indexPath: IndexPath) -> PhotoDetailsViewModel {
         let photoInfo = photoInfoList[indexPath.row]
-        let viewModel = DetailInfoViewModel(
+        let viewModel = PhotoDetailsViewModel(
             photoID: photoInfo.id,
             blurHash: photoInfo.blurHash,
             photoFetchingManager: self.photoFetchingManager
