@@ -39,7 +39,7 @@ struct DetailPhotoInfo: Codable {
         self.id = try container.decode(String.self, forKey: .id)
         self.creationDate = try container.decode(Date.self, forKey: .creationDate)
         self.downloads = try container.decode(Int.self, forKey: .downloads)
-        self.description = try container.decode(String.self, forKey: .description)
+        self.description = try container.decode(String?.self, forKey: .description)
         self.location = try container.decode(Location.self, forKey: .location)
         let authorNestedContainer = try container.nestedContainer(keyedBy: CodingKeys.UserKeys.self, forKey: .authorName)
         let imageURLNestedContainer = try container.nestedContainer(keyedBy: CodingKeys.ImageURLKeys.self, forKey: .photoURL)

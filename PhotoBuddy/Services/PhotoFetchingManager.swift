@@ -104,8 +104,8 @@ class PhotoFetchingManager {
                     decoder.dateDecodingStrategy = .iso8601
                     let decodedInfo = try decoder.decode(T.self, from: data)
                     completion(decodedInfo, nil)
-                } catch {
-                    print("Invalid data")
+                } catch let error {
+                    print("Invalid data: \(error)")
                     completion(nil, .invalidData)
                 }
             }
