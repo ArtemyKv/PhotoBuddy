@@ -32,6 +32,10 @@ class PhotoDetailsViewController: UIViewController {
             guard let photo = photo else { return }
             self?.photoDetailsView.imageScrollView.set(image: photo)
         }
+        viewModel.isInFavorites.bind { [weak self] isInFavorites in
+            self?.photoDetailsView.configureFavoritesButton(isInFavorites: isInFavorites)
+        }
+        
         viewModel.fetchDetailPhotoInfo()
 
     }
@@ -48,7 +52,7 @@ class PhotoDetailsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.tabBarController?.tabBar.isHidden = false
-
+        viewModel.updateFavorites()
     }
     
     override func loadView() {
@@ -60,7 +64,7 @@ class PhotoDetailsViewController: UIViewController {
 
 extension PhotoDetailsViewController: PhotoDetailsViewDelegate {
     func toggleFavoritesButtonPressed() {
-        
+        viewModel.isInFavorites.value.toggle()
     }
     
     func infoButtonPressed() {

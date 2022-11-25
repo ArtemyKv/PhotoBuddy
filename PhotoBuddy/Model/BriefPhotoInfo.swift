@@ -38,6 +38,13 @@ struct BriefPhotoInfo: Codable {
         let userNestedContainer = try container.nestedContainer(keyedBy: CodingKeys.UserCodingKeys.self, forKey: .authorName)
         self.authorName = try userNestedContainer.decode(String.self, forKey: .name)
     }
+    
+    init(id: String, blurHash: String, url: URL, authorName: String) {
+        self.id = id
+        self.blurHash = blurHash
+        self.url = url
+        self.authorName = authorName
+    }
 }
 
 extension BriefPhotoInfo: Equatable {

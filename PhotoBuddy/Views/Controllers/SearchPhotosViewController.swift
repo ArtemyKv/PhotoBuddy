@@ -54,7 +54,7 @@ class SearchPhotosViewController: UIViewController {
             cellViewModel.photo.bind { image in
                 cell.photoView.image = image
             }
-            self.searchResultsViewModel.fetchImage(forCellViewModel: cellViewModel)
+
         }
         return cellRegistration
     }

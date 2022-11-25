@@ -89,6 +89,14 @@ class PhotoDetailsView: UIView {
         }
     }
     
+    func configureFavoritesButton(isInFavorites: Bool) {
+        if isInFavorites {
+            toggleFavoritesButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
+        } else if !isInFavorites {
+            toggleFavoritesButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        }
+    }
+    
     override init(frame: CGRect) {
         super .init(frame: frame)
         setupView()

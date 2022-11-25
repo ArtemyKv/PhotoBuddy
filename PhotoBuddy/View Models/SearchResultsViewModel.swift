@@ -11,28 +11,18 @@ protocol SearchResultsViewModelDelegate: AnyObject {
     func presentAlert(message: String)
 }
 
-class SearchResultsViewModel {
+class SearchResultsViewModel: PhotoListViewModel {
     
     weak var delegate: SearchResultsViewModelDelegate?
     
-    private var photoFetchingManager = PhotoFetchingManager()
+    private var photoFetchingManager = PhotoFetchingManager.shared
     
-    private var photoInfoList: [BriefPhotoInfo] = []
     private var numberOfPages: Int = 0
     private var currentPage: Int = 0
     private var currentSearchTerm: String = ""
     
+    var photoInfoList: [BriefPhotoInfo] = []
     var cellViewModels = Box<[CellViewModel]>(value: [])
-    
-    func detailInfoViewModel(forPhotoAt indexPath: IndexPath) -> PhotoDetailsViewModel {
-        let photoInfo = photoInfoList[indexPath.row]
-        let viewModel = PhotoDetailsViewModel(
-            photoID: photoInfo.id,
-            blurHash: photoInfo.blurHash,
-            photoFetchingManager: self.photoFetchingManager
-        )
-        return viewModel
-    }
     
     func searchPhotos(searchTerm: String, completion: @escaping () -> Void) {
         guard !(searchTerm == currentSearchTerm && currentPage >= numberOfPages) else { return }
@@ -56,21 +46,7 @@ class SearchResultsViewModel {
         }
     }
     
-    func fetchImage(forCellViewModel cellViewModel: CellViewModel) {
-        let imageUrl = cellViewModel.photoInfo.url
-        self.photoFetchingManager.downloadPhoto(url: imageUrl) { image in
-            cellViewModel.photo.value = image
-        }
-    }
-    
     private func presentAlert(withError error: PhotosFetchingError) {
         delegate?.presentAlert(message: error.localizedDescription)
-    }
-    
-    private func createCellViewModels(withPhotoInfoList list: [BriefPhotoInfo]) {
-        for photoInfo in list {
-            let cellViewModel = CellViewModel(photoInfo: photoInfo)
-            cellViewModels.value.append(cellViewModel)
-        }
     }
 }

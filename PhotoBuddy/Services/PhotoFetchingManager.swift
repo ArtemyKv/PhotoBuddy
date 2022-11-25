@@ -17,6 +17,10 @@ enum PhotosFetchingError: Error {
 
 class PhotoFetchingManager {
     
+    static let shared = PhotoFetchingManager()
+    
+    private init() { }
+    
     private let apiKey = "2C_Da4yPnD49J4lllIVkiSZEY3Dct6nuz0ldMSjIivI"
     private let scheme = "https"
     private let host = "api.unsplash.com"
