@@ -28,6 +28,7 @@ class PhotoDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.alertPresenter = self
         viewModel.image.bind { [weak self] photo in
             guard let photo = photo else { return }
             self?.photoDetailsView.imageScrollView.set(image: photo)
@@ -74,3 +75,5 @@ extension PhotoDetailsViewController: PhotoDetailsViewDelegate {
         self.present(navigationController, animated: true)
     }
 }
+
+extension PhotoDetailsViewController: AlertPresenter { }

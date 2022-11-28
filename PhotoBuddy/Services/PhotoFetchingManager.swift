@@ -8,11 +8,27 @@
 import Foundation
 import UIKit.UIImage
 
-enum PhotosFetchingError: Error {
-    case failedRequest
+enum PhotosFetchingError: Error, CustomStringConvertible {
+    case failedRequest(String)
     case invalidResponse
+    case responseFailure(Int)
     case noData
     case invalidData
+    
+    var description: String {
+        switch self {
+            case .failedRequest(let description):
+                return "Failed request.\n\(description)"
+            case .invalidResponse:
+                return "Unable to process response from server"
+            case .responseFailure(let statusCode):
+                return "Response failure.\nStatus code: \(statusCode)"
+            case .noData:
+                return "No data returned from server"
+            case .invalidData:
+                return "Invalid data"
+        }
+    }
 }
 
 class PhotoFetchingManager {
@@ -81,7 +97,7 @@ class PhotoFetchingManager {
             DispatchQueue.main.async {
                 guard error == nil else {
                     print("failedRequest. Error: \(error!), \(error!.localizedDescription)")
-                    completion(nil, .failedRequest)
+                    completion(nil, .failedRequest(error!.localizedDescription))
                     return
                 }
                 
@@ -93,7 +109,7 @@ class PhotoFetchingManager {
                 
                 guard httpResponse.statusCode == 200 else {
                     print("Failure response with code: \(httpResponse.statusCode)")
-                    completion(nil, .failedRequest)
+                    completion(nil, .responseFailure(httpResponse.statusCode))
                     return
                 }
                 

@@ -7,13 +7,9 @@
 
 import Foundation
 
-protocol SearchResultsViewModelDelegate: AnyObject {
-    func presentAlert(message: String)
-}
-
 class SearchResultsViewModel: PhotoListViewModel {
     
-    weak var delegate: SearchResultsViewModelDelegate?
+    weak var alertPresenter: AlertPresenter?
     
     private var photoFetchingManager = PhotoFetchingManager.shared
     
@@ -42,11 +38,14 @@ class SearchResultsViewModel: PhotoListViewModel {
             self?.numberOfPages = photoResponse.totalPages
             self?.photoInfoList.append(contentsOf: photoInfoList)
             self?.createCellViewModels(withPhotoInfoList: photoInfoList)
+            if photoInfoList.isEmpty {
+                self?.alertPresenter?.presentAlert(title: "Oops!", message: "No photos found")
+            }
             completion()
         }
     }
     
     private func presentAlert(withError error: PhotosFetchingError) {
-        delegate?.presentAlert(message: error.localizedDescription)
+        alertPresenter?.presentAlert(title: "Error", message: error.description)
     }
 }

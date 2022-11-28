@@ -26,6 +26,7 @@ class PhotoDetailsViewModel {
     }
     
     let photoInfoViewModel = PhotoInfoViewModel()
+    weak var alertPresenter: AlertPresenter?
     
     //View properties
     var image: Box<UIImage?> = Box(value: nil)
@@ -88,10 +89,13 @@ class PhotoDetailsViewModel {
     
     func fetchDetailPhotoInfo() {
         photoFetchingManager.fetchDetailPhotoInfo(photoID: briefPhotoInfo.id) { [weak self] info, error in
-            guard let info = info else {
-                //TODO: - present alert with error
+            if let error = error {
+                self?.alertPresenter?.presentAlert(title: "Error", message: error.description)
                 return
             }
+            
+            guard let info = info else { return }
+            
             self?.photoInfoViewModel.detailPhotoInfo = info
             self?.photoFetchingManager.downloadPhoto(url: info.photoURL, completion: { photo in
                 self?.photo = photo

@@ -30,6 +30,7 @@ class SearchPhotosViewController: UIViewController {
         imageListView.collectionView.delegate = self
         imageListView.collectionView.dataSource = dataSource
         imageListView.collectionView.collectionViewLayout = createLayout()
+        searchResultsViewModel.alertPresenter = self
         searchResultsViewModel.cellViewModels.bind { [weak self] items in
             self?.applySnapshot(with: items)
         }
@@ -91,6 +92,7 @@ class SearchPhotosViewController: UIViewController {
     }
 }
 
+//MARK: - Extension UICollectionViewDelegate
 extension SearchPhotosViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.imageListView.collectionView.deselectItem(at: indexPath, animated: true)
@@ -112,6 +114,7 @@ extension SearchPhotosViewController: UICollectionViewDelegate {
     }
 }
 
+//MARK: - Extension UISearchBarDelegate
 extension SearchPhotosViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.searchResultsViewModel.searchPhotos(searchTerm: searchBar.text ?? "") { [weak self] in
@@ -120,3 +123,5 @@ extension SearchPhotosViewController: UISearchBarDelegate {
     }
 }
 
+//MARK: -Extension AlertPresenter
+extension SearchPhotosViewController: AlertPresenter { }
