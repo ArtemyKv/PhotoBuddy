@@ -44,10 +44,17 @@ class PhotoDetailsView: UIView {
         return button
     }()
     
+    let activityIndicatorView: UIActivityIndicatorView = {
+        let activityView = UIActivityIndicatorView(style: .large)
+        activityView.hidesWhenStopped = true
+        return activityView
+    }()
+    
     func setupView() {
         self.addSubview(imageScrollView)
         self.addSubview(infoButton)
         self.addSubview(toggleFavoritesButton)
+        self.addSubview(activityIndicatorView)
         
         setupConstraints()
         setupButtonActions()
@@ -57,6 +64,7 @@ class PhotoDetailsView: UIView {
         imageScrollView.translatesAutoresizingMaskIntoConstraints = false
         infoButton.translatesAutoresizingMaskIntoConstraints = false
         toggleFavoritesButton.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             imageScrollView.topAnchor.constraint(equalTo: self.topAnchor),
@@ -70,9 +78,9 @@ class PhotoDetailsView: UIView {
             toggleFavoritesButton.widthAnchor.constraint(equalToConstant: 50),
             toggleFavoritesButton.heightAnchor.constraint(equalToConstant: 50),
             toggleFavoritesButton.centerXAnchor.constraint(equalTo: infoButton.centerXAnchor),
-            toggleFavoritesButton.centerYAnchor.constraint(equalTo: infoButton.centerYAnchor, constant: -50)
-            
-            
+            toggleFavoritesButton.centerYAnchor.constraint(equalTo: infoButton.centerYAnchor, constant: -50),
+            activityIndicatorView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            activityIndicatorView.centerYAnchor.constraint(equalTo: self.centerYAnchor)
         ])
     }
     

@@ -87,10 +87,11 @@ class PhotoDetailsViewModel {
         }
     }
     
-    func fetchDetailPhotoInfo() {
+    func fetchDetailPhotoInfo(completion: @escaping () -> (Void)) {
         photoFetchingManager.fetchDetailPhotoInfo(photoID: briefPhotoInfo.id) { [weak self] info, error in
             if let error = error {
                 self?.alertPresenter?.presentAlert(title: "Error", message: error.description)
+                completion()
                 return
             }
             
@@ -99,6 +100,7 @@ class PhotoDetailsViewModel {
             self?.photoInfoViewModel.detailPhotoInfo = info
             self?.photoFetchingManager.downloadPhoto(url: info.photoURL, completion: { photo in
                 self?.photo = photo
+                completion()
             })
         }
     }

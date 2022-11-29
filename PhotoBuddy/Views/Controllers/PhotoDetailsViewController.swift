@@ -37,7 +37,10 @@ class PhotoDetailsViewController: UIViewController {
             self?.photoDetailsView.configureFavoritesButton(isInFavorites: isInFavorites)
         }
         
-        viewModel.fetchDetailPhotoInfo()
+        photoDetailsView.activityIndicatorView.startAnimating()
+        viewModel.fetchDetailPhotoInfo { [weak self] in
+            self?.photoDetailsView.activityIndicatorView.stopAnimating()
+        }
 
     }
     
