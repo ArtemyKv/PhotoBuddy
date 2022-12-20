@@ -60,12 +60,33 @@ class SearchPhotosViewController: UIViewController {
         return cellRegistration
     }
     
+    func footerRegistration() -> UICollectionView.SupplementaryRegistration<BottomRefreshControl> {
+        let footerRegistration = UICollectionView.SupplementaryRegistration<BottomRefreshControl>(elementKind: BottomRefreshControl.elementKind) { supplementaryView, elementKind, indexPath in
+            self.searchResultsViewModel.isLoadingNextPage.bind { isLoading in
+                DispatchQueue.main.async {
+                    if isLoading {
+                        supplementaryView.indicator.startAnimating()
+                    } else {
+                        supplementaryView.indicator.stopAnimating()
+                    }
+                }
+            }
+        }
+        return footerRegistration
+    }
+    
     func configureDataSource() -> DataSourceType {
         let cellRegistration = self.cellRegistration()
+        let footerRegistration = self.footerRegistration()
         let dataSource = DataSourceType(collectionView: imageListView.collectionView) { collectionView, indexPath, itemIdentifier in
             let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
             return cell
         }
+        
+        dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
+            return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+        }
+        
         return dataSource
     }
     
@@ -79,6 +100,12 @@ class SearchPhotosViewController: UIViewController {
         
         let section = NSCollectionLayoutSection(group: group)
         section.interGroupSpacing = 8
+        
+        let sectionFooterSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.25))
+
+        let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: sectionFooterSize, elementKind: BottomRefreshControl.elementKind, alignment: .bottom)
+
+        section.boundarySupplementaryItems = [footer]
         
         let layout = UICollectionViewCompositionalLayout(section: section)
         return layout
@@ -105,12 +132,10 @@ extension SearchPhotosViewController: UICollectionViewDelegate {
         guard indexPath.row == searchResultsViewModel.cellViewModels.value.count - 1 && isWaitingForNextPage else { return }
         let searchTerm = self.navigationItem.searchController?.searchBar.text ?? ""
         isWaitingForNextPage = false
-        let workItem = DispatchWorkItem {
-            self.searchResultsViewModel.searchPhotos(searchTerm: searchTerm) { [weak self] in
-                self?.isWaitingForNextPage = true
-            }
+        
+        self.searchResultsViewModel.searchPhotos(searchTerm: searchTerm) { [weak self] in
+            self?.isWaitingForNextPage = true
         }
-        DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + 1, execute: workItem)
     }
 }
 
