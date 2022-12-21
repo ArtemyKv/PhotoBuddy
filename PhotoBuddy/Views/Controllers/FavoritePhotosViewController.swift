@@ -15,6 +15,7 @@ class FavoritePhotosViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Favorites"
+        tableView.separatorStyle = .none
         tableView.register(FavoritePhotoTableViewCell.self, forCellReuseIdentifier: FavoritePhotoTableViewCell.identifier)
         viewModel.cellViewModels.bind { [weak self] _ in
             self?.tableView.reloadData()
@@ -34,7 +35,7 @@ class FavoritePhotosViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: FavoritePhotoTableViewCell.identifier, for: indexPath) as! FavoritePhotoTableViewCell
         let cellViewModel = viewModel.cellViewModels.value[indexPath.row]
         cellViewModel.photo.bind { photo in
-            cell.photoView.image = photo
+            cell.updateCell(with: photo)
         }
         cellViewModel.authorName.bind { name in
             cell.authorNameLabel.text = name

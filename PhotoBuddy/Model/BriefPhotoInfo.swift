@@ -20,7 +20,7 @@ struct BriefPhotoInfo: Codable {
         case authorName = "user"
         
         enum URLCodingKeys: String, CodingKey {
-            case url = "thumb"
+            case url = "small"
         }
         
         enum UserCodingKeys: String, CodingKey {
