@@ -85,16 +85,32 @@ class PhotoDetailsView: UIView {
     }
     
     func setupButtonActions() {
-        toggleFavoritesButton.addTarget(self, action: #selector(buttonPressed(sender:)), for: .touchUpInside)
-        infoButton.addTarget(self, action: #selector(buttonPressed(sender:)), for: .touchUpInside)
+        toggleFavoritesButton.addTarget(self, action: #selector(buttonTouchedDown(sender:)), for: .touchDown)
+        infoButton.addTarget(self, action: #selector(buttonTouchedDown(sender:)), for: .touchDown)
+        
+        toggleFavoritesButton.addTarget(self, action: #selector(buttonTouchedUpOutside(sender:)), for: .touchUpOutside)
+        infoButton.addTarget(self, action: #selector(buttonTouchedUpOutside(sender:)), for: .touchUpOutside)
+        
+        toggleFavoritesButton.addTarget(self, action: #selector(buttonTouchedUpInside(sender:)), for: .touchUpInside)
+        infoButton.addTarget(self, action: #selector(buttonTouchedUpInside(sender:)), for: .touchUpInside)
+        
     }
     
-    @objc func buttonPressed(sender: UIButton) {
+    @objc func buttonTouchedUpInside(sender: UIButton) {
         if sender == infoButton {
             delegate?.infoButtonPressed()
         } else if sender == toggleFavoritesButton {
             delegate?.toggleFavoritesButtonPressed()
         }
+        animateButtonUp(button: sender)
+    }
+    
+    @objc func buttonTouchedDown(sender: UIButton) {
+        animateButtonDown(button: sender)
+    }
+    
+    @objc func buttonTouchedUpOutside(sender: UIButton) {
+        animateButtonUp(button: sender)
     }
     
     func configureFavoritesButton(isInFavorites: Bool) {
@@ -102,6 +118,20 @@ class PhotoDetailsView: UIView {
             toggleFavoritesButton.setImage(UIImage(systemName: "checkmark"), for: .normal)
         } else if !isInFavorites {
             toggleFavoritesButton.setImage(UIImage(systemName: "plus"), for: .normal)
+        }
+    }
+    
+    func animateButtonDown(button: UIButton) {
+        UIView.animate(withDuration: 0.2) {
+            button.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            button.alpha = 0.6
+        }
+    }
+    
+    func animateButtonUp(button: UIButton) {
+        UIView.animate(withDuration: 0.2) {
+            button.transform = .identity
+            button.alpha = 1.0
         }
     }
     
