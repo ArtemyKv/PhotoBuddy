@@ -13,6 +13,8 @@ protocol PhotoDetailsViewDelegate: AnyObject {
     func toggleFavoritesButtonPressed()
     
     func infoButtonPressed()
+    
+    func saveButtonPressed()
 }
 
 class PhotoDetailsView: UIView {
@@ -44,17 +46,48 @@ class PhotoDetailsView: UIView {
         return button
     }()
     
+    let saveButton: RoundButton = {
+        let button = RoundButton()
+        button.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 25), forImageIn: .normal)
+        button.setImage(UIImage(systemName: "arrow.down.to.line"), for: .normal)
+        button.tintColor = .systemGray6
+        button.backgroundColor = .label
+        button.layer.masksToBounds = true
+        return button
+    }()
+    
     let activityIndicatorView: UIActivityIndicatorView = {
         let activityView = UIActivityIndicatorView(style: .large)
         activityView.hidesWhenStopped = true
         return activityView
     }()
     
+    let gradientLayer: CAGradientLayer = {
+        let gradient = CAGradientLayer()
+        gradient.colors = [UIColor.label, UIColor.clear, UIColor.label].map { $0.cgColor }
+        gradient.locations = [0.0, 0.5, 1.0]
+        gradient.startPoint = CGPoint(x: 0.5, y: 0)
+        gradient.endPoint = CGPoint(x: 0.5, y: 1.0)
+        gradient.type = .axial
+        gradient.opacity = 0.7
+        return gradient
+    }()
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        gradientLayer.frame = CGRect(
+            x: 0.0,
+            y: 0.0,
+            width: saveButton.frame.width,
+            height: saveButton.frame.height)
+    }
+    
     func setupView() {
         self.addSubview(imageScrollView)
         self.addSubview(infoButton)
         self.addSubview(toggleFavoritesButton)
         self.addSubview(activityIndicatorView)
+        self.addSubview(saveButton)
         
         setupConstraints()
         setupButtonActions()
@@ -65,6 +98,7 @@ class PhotoDetailsView: UIView {
         infoButton.translatesAutoresizingMaskIntoConstraints = false
         toggleFavoritesButton.translatesAutoresizingMaskIntoConstraints = false
         activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        saveButton.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             imageScrollView.topAnchor.constraint(equalTo: self.topAnchor),
@@ -73,34 +107,47 @@ class PhotoDetailsView: UIView {
             imageScrollView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             infoButton.widthAnchor.constraint(equalToConstant: 30),
             infoButton.heightAnchor.constraint(equalToConstant: 30),
-            infoButton.centerXAnchor.constraint(equalTo: self.trailingAnchor, constant: -40),
+            infoButton.centerXAnchor.constraint(equalTo: self.leadingAnchor, constant: 40),
             infoButton.centerYAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -40),
             toggleFavoritesButton.widthAnchor.constraint(equalToConstant: 50),
             toggleFavoritesButton.heightAnchor.constraint(equalToConstant: 50),
-            toggleFavoritesButton.centerXAnchor.constraint(equalTo: infoButton.centerXAnchor),
-            toggleFavoritesButton.centerYAnchor.constraint(equalTo: infoButton.centerYAnchor, constant: -50),
+            toggleFavoritesButton.centerXAnchor.constraint(equalTo: self.trailingAnchor, constant: -40),
+            toggleFavoritesButton.centerYAnchor.constraint(equalTo: saveButton.centerYAnchor, constant: -70),
             activityIndicatorView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            activityIndicatorView.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            activityIndicatorView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            saveButton.widthAnchor.constraint(equalToConstant: 50),
+            saveButton.heightAnchor.constraint(equalTo: saveButton.widthAnchor),
+            saveButton.centerXAnchor.constraint(equalTo: toggleFavoritesButton.centerXAnchor),
+            saveButton.centerYAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -50),
         ])
     }
     
     func setupButtonActions() {
         toggleFavoritesButton.addTarget(self, action: #selector(buttonTouchedDown(sender:)), for: .touchDown)
         infoButton.addTarget(self, action: #selector(buttonTouchedDown(sender:)), for: .touchDown)
+        saveButton.addTarget(self, action: #selector(buttonTouchedDown(sender:)), for: .touchDown)
         
         toggleFavoritesButton.addTarget(self, action: #selector(buttonTouchedUpOutside(sender:)), for: .touchUpOutside)
         infoButton.addTarget(self, action: #selector(buttonTouchedUpOutside(sender:)), for: .touchUpOutside)
+        saveButton.addTarget(self, action: #selector(buttonTouchedUpOutside(sender:)), for: .touchUpOutside)
         
         toggleFavoritesButton.addTarget(self, action: #selector(buttonTouchedUpInside(sender:)), for: .touchUpInside)
         infoButton.addTarget(self, action: #selector(buttonTouchedUpInside(sender:)), for: .touchUpInside)
+        saveButton.addTarget(self, action: #selector(buttonTouchedUpInside(sender:)), for: .touchUpInside)
+        
         
     }
     
     @objc func buttonTouchedUpInside(sender: UIButton) {
-        if sender == infoButton {
-            delegate?.infoButtonPressed()
-        } else if sender == toggleFavoritesButton {
-            delegate?.toggleFavoritesButtonPressed()
+        switch sender {
+            case infoButton:
+                delegate?.infoButtonPressed()
+            case toggleFavoritesButton:
+                delegate?.toggleFavoritesButtonPressed()
+            case saveButton:
+                delegate?.saveButtonPressed()
+            default:
+                return
         }
         animateButtonUp(button: sender)
     }
@@ -121,18 +168,35 @@ class PhotoDetailsView: UIView {
         }
     }
     
-    func animateButtonDown(button: UIButton) {
+    private func animateButtonDown(button: UIButton) {
         UIView.animate(withDuration: 0.2) {
             button.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
             button.alpha = 0.6
         }
     }
     
-    func animateButtonUp(button: UIButton) {
+    private func animateButtonUp(button: UIButton) {
         UIView.animate(withDuration: 0.2) {
             button.transform = .identity
             button.alpha = 1.0
         }
+    }
+    
+    func animateImageSaving() {
+        saveButton.layer.addSublayer(gradientLayer)
+        
+        let animation = CABasicAnimation(keyPath: "locations")
+        animation.fromValue = [0.0, 0.0, 0.2]
+        animation.toValue = [0.8, 1.0, 1.0]
+        animation.duration = 1.0
+        animation.repeatCount = Float.infinity
+        gradientLayer.add(animation, forKey: "gradientAnimation")
+        
+    }
+    
+    func animateSavingCompletion() {
+        gradientLayer.removeAnimation(forKey: "gradientAnimation")
+        gradientLayer.removeFromSuperlayer()
     }
     
     override init(frame: CGRect) {

@@ -52,7 +52,7 @@ class SearchResultsViewModel: PhotoListViewModel {
                     self?.photoInfoList.append(contentsOf: photoInfoList)
                     self?.createCellViewModels(withPhotoInfoList: photoInfoList)
                     if photoInfoList.isEmpty {
-                        self?.alertPresenter?.presentAlert(title: "Oops!", message: "No photos found")
+                        self?.alertPresenter?.presentErrorAlert(title: "Oops!", message: "No photos found")
                     }
                     completion()
             }
@@ -61,6 +61,6 @@ class SearchResultsViewModel: PhotoListViewModel {
     }
     
     private func presentAlert(withError error: PhotosFetchingError) {
-        alertPresenter?.presentAlert(title: "Error", message: error.description)
+        alertPresenter?.presentErrorAlert(title: "Error", message: error.description)
     }
 }

@@ -90,7 +90,7 @@ class PhotoDetailsViewModel {
     func fetchDetailPhotoInfo(completion: @escaping () -> (Void)) {
         photoFetchingManager.fetchDetailPhotoInfo(photoID: briefPhotoInfo.id) { [weak self] info, error in
             if let error = error {
-                self?.alertPresenter?.presentAlert(title: "Error", message: error.description)
+                self?.alertPresenter?.presentErrorAlert(title: "Error", message: error.description)
                 completion()
                 return
             }

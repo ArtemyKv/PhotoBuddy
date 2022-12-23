@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Photos
 
 class PhotoDetailsViewController: UIViewController {
     
@@ -64,6 +65,18 @@ class PhotoDetailsViewController: UIViewController {
         photoDetailsView.delegate = self
         self.view = photoDetailsView
     }
+    
+    func saveImageToDevice() {
+        guard let photo = viewModel.image.value else { return }
+        UIImageWriteToSavedPhotosAlbum(photo, self, #selector(imageDidFinishSavingOnDevice), nil)
+    }
+    
+    @objc func imageDidFinishSavingOnDevice(
+        image: UIImage!,
+        didFinishSavingWithError error: NSError!,
+        contextInfo: UnsafeRawPointer) {
+            self.photoDetailsView.animateSavingCompletion()
+    }
 }
 
 extension PhotoDetailsViewController: PhotoDetailsViewDelegate {
@@ -77,6 +90,27 @@ extension PhotoDetailsViewController: PhotoDetailsViewDelegate {
         let navigationController = UINavigationController(rootViewController: infoViewController)
         self.present(navigationController, animated: true)
     }
+    
+    func saveButtonPressed() {
+        
+        PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] status in
+            switch status {
+                case .authorized:
+                    DispatchQueue.main.async {
+                        self?.saveImageToDevice()
+                        self?.photoDetailsView.animateImageSaving()
+                    }
+                case .denied:
+                    DispatchQueue.main.async {
+                        self?.presentAuthorizationStatusAlert(title: "Access denied", message: "Access to device photo library denied. You can change this in Settings")
+                    }
+                default:
+                    break
+            }
+        }
+    }
+    
+
 }
 
 extension PhotoDetailsViewController: AlertPresenter { }
