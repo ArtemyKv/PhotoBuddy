@@ -38,6 +38,10 @@ class PhotoDetailsViewController: UIViewController {
             self?.photoDetailsView.configureFavoritesButton(isInFavorites: isInFavorites)
         }
         
+        viewModel.authorName.bind { [weak self] authorName in
+            self?.navigationItem.title = authorName
+        }
+        
         photoDetailsView.activityIndicatorView.startAnimating()
         viewModel.fetchDetailPhotoInfo { [weak self] in
             self?.photoDetailsView.activityIndicatorView.stopAnimating()

@@ -31,9 +31,11 @@ class PhotoDetailsViewModel {
     //View properties
     var image: Box<UIImage?> = Box(value: nil)
     var isInFavorites = Box<Bool>(value: false)
+    var authorName = Box(value: "")
     
     init(briefPhotoInfo: BriefPhotoInfo) {
         self.briefPhotoInfo = briefPhotoInfo
+        self.authorName.value = briefPhotoInfo.authorName
         checkPhotoInitialFavoritesStatus()
     }
     

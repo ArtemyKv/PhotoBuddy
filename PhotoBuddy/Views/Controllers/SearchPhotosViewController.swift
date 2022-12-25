@@ -33,6 +33,7 @@ class SearchPhotosViewController: UIViewController {
         searchResultsViewModel.alertPresenter = self
         searchResultsViewModel.cellViewModels.bind { [weak self] items in
             self?.applySnapshot(with: items)
+            self?.imageListView.toggleBackgroundLabelsVisibility(shouldHide: !items.isEmpty)
         }
         
     }
