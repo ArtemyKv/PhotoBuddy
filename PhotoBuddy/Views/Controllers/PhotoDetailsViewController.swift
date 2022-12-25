@@ -47,7 +47,6 @@ class PhotoDetailsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.navigationBar.isTranslucent = true
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.tabBarController?.tabBar.isHidden = true
@@ -57,6 +56,9 @@ class PhotoDetailsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.tabBarController?.tabBar.isHidden = false
+        self.navigationController?.navigationBar.shadowImage = nil
+        self.navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
+
         viewModel.updateFavorites()
     }
     
