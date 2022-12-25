@@ -49,7 +49,11 @@ class PhotoFetchingManager {
     
     private var semaphore = DispatchSemaphore(value: 10)
     private var imageDownloadingTasks: [URL: URLSessionDataTask] = [:]
-    private var cachedImages = NSCache<NSString, UIImage>()
+    private var cachedImages: NSCache<NSString, UIImage> = {
+        let cache = NSCache<NSString, UIImage>()
+        cache.countLimit = 50
+        return cache
+    }()
     
     private func cachedImage(for urlString: NSString) -> UIImage? {
         return cachedImages.object(forKey: urlString)
