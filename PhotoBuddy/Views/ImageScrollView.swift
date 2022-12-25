@@ -69,7 +69,9 @@ class ImageScrollView: UIScrollView {
             frameToCenter.origin.x = 0
         }
         
-        if frameToCenter.size.height < boundsSize.height {
+        if frameToCenter.height / 2 > boundsSize.height / 2 - self.safeAreaInsets.top {
+            frameToCenter.origin.y = 0
+        } else if frameToCenter.size.height < boundsSize.height {
             frameToCenter.origin.y = (boundsSize.height - frameToCenter.height) / 2 - self.safeAreaInsets.top
         } else {
             frameToCenter.origin.y = 0
