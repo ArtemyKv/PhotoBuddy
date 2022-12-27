@@ -9,7 +9,6 @@ import Foundation
 
 class SearchResultsViewModel: PhotoListViewModel {
     
-    weak var alertPresenter: AlertPresenter?
     
     private var photoFetchingManager = PhotoFetchingManager.shared
     
@@ -22,7 +21,7 @@ class SearchResultsViewModel: PhotoListViewModel {
     
     var isLoadingNextPage = Box(value: false)
     
-    func searchPhotos(searchTerm: String, completion: @escaping () -> Void) {
+    func searchPhotos(searchTerm: String, completion: @escaping (_ alertTitle: String?, _ alertMessage: String?) -> Void) {
         isLoadingNextPage.value = true
         guard !(searchTerm == currentSearchTerm && currentPage >= numberOfPages) else {
             self.isLoadingNextPage.value = false
@@ -45,22 +44,21 @@ class SearchResultsViewModel: PhotoListViewModel {
                     
                     self?.isLoadingNextPage.value = false
                     guard let photoResponse = photoResponse, let photoInfoList = photoResponse.photoInfos else {
-                        self?.presentAlert(withError: error!)
+                        if let error = error {
+                            completion("Error", error.description)
+                        }
                         return
                     }
                     self?.numberOfPages = photoResponse.totalPages
                     self?.photoInfoList.append(contentsOf: photoInfoList)
                     self?.createCellViewModels(withPhotoInfoList: photoInfoList)
                     if photoInfoList.isEmpty {
-                        self?.alertPresenter?.presentErrorAlert(title: "Oops!", message: "No photos found")
+                        completion("Oops!", "No photos found")
+                        return
                     }
-                    completion()
+                    completion(nil, nil)
             }
         }
         
-    }
-    
-    private func presentAlert(withError error: PhotosFetchingError) {
-        alertPresenter?.presentErrorAlert(title: "Error", message: error.description)
     }
 }

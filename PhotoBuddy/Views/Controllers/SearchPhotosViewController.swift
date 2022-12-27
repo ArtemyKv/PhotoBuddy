@@ -30,7 +30,6 @@ class SearchPhotosViewController: UIViewController {
         imageListView.collectionView.delegate = self
         imageListView.collectionView.dataSource = dataSource
         imageListView.collectionView.collectionViewLayout = createLayout()
-        searchResultsViewModel.alertPresenter = self
         searchResultsViewModel.cellViewModels.bind { [weak self] items in
             self?.applySnapshot(with: items)
             self?.imageListView.toggleBackgroundLabelsVisibility(shouldHide: !items.isEmpty)
@@ -118,6 +117,16 @@ class SearchPhotosViewController: UIViewController {
         snapshot.appendItems(items)
         dataSource.apply(snapshot)
     }
+    
+    func searchPhotos(searchTerm: String) {
+        self.searchResultsViewModel.searchPhotos(searchTerm: searchTerm) { [weak self] alertTitle, alertMessage in
+            if let alertTitle, let alertMessage {
+                self?.presentErrorAlert(title: alertTitle, message: alertMessage)
+                return
+            }
+            self?.isWaitingForNextPage = true
+        }
+    }
 }
 
 //MARK: - Extension UICollectionViewDelegate
@@ -133,19 +142,15 @@ extension SearchPhotosViewController: UICollectionViewDelegate {
         guard indexPath.row == searchResultsViewModel.cellViewModels.value.count - 1 && isWaitingForNextPage else { return }
         let searchTerm = self.navigationItem.searchController?.searchBar.text ?? ""
         isWaitingForNextPage = false
-        
-        self.searchResultsViewModel.searchPhotos(searchTerm: searchTerm) { [weak self] in
-            self?.isWaitingForNextPage = true
-        }
+        searchPhotos(searchTerm: searchTerm)
     }
 }
 
 //MARK: - Extension UISearchBarDelegate
 extension SearchPhotosViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        self.searchResultsViewModel.searchPhotos(searchTerm: searchBar.text ?? "") { [weak self] in
-            self?.isWaitingForNextPage = true
-        }
+        let searchTerm = searchBar.text ?? ""
+        searchPhotos(searchTerm: searchTerm)
     }
 }
 
