@@ -29,7 +29,6 @@ class PhotoDetailsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.alertPresenter = self
         viewModel.image.bind { [weak self] photo in
             guard let photo = photo else { return }
             self?.photoDetailsView.imageScrollView.set(image: photo)
@@ -43,7 +42,11 @@ class PhotoDetailsViewController: UIViewController {
         }
         
         photoDetailsView.activityIndicatorView.startAnimating()
-        viewModel.fetchDetailPhotoInfo { [weak self] in
+        
+        viewModel.fetchDetailPhotoInfo { [weak self] errorTitle, errorMessage in
+            if let errorTitle, let errorMessage {
+                self?.presentErrorAlert(title: errorTitle, message: errorMessage)
+            }
             self?.photoDetailsView.activityIndicatorView.stopAnimating()
         }
 
