@@ -19,7 +19,7 @@ class TabBarController: UITabBarController {
     }
     
     func createChildControllers() {
-        let searchPhotosVC = SearchPhotosViewController()
+        let searchPhotosVC = SearchResultsViewController()
         let firstTabNavigationController = UINavigationController(rootViewController: searchPhotosVC)
         
         let favoritePhotosVC = FavoritePhotosViewController()

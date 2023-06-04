@@ -33,6 +33,12 @@ class CellViewModel {
             self?.photo.value = image
         }
     }
+    
+    typealias PhotoBinding = (UIImage?) -> Void
+    
+    func bindPhoto(_ binding: PhotoBinding?) {
+        photo.bind(listener: binding)
+    }
 }
 
 extension CellViewModel: Hashable {

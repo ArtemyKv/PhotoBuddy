@@ -1,13 +1,13 @@
 //
 //  ViewController.swift
-//  SimpleUnsplashPhoto
+//  PhotoBuddy
 //
 //  Created by Artem Kvashnin on 11.11.2022.
 //
 
 import UIKit
 
-class SearchPhotosViewController: UIViewController {
+class SearchResultsViewController: UIViewController {
     typealias DataSourceType = UICollectionViewDiffableDataSource<Section, CellViewModel>
     
     var dataSource: DataSourceType!
@@ -22,15 +22,17 @@ class SearchPhotosViewController: UIViewController {
         guard isViewLoaded else { return nil }
         return (self.view as! ImageListView)
     }
+    
+    var collectionView: UICollectionView {
+        return imageListView.collectionView
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSearchController()
-        dataSource = configureDataSource()
-        imageListView.collectionView.delegate = self
-        imageListView.collectionView.dataSource = dataSource
-        imageListView.collectionView.collectionViewLayout = createLayout()
-        searchResultsViewModel.cellViewModels.bind { [weak self] items in
+        makeDataSource()
+        configureCollectionView()
+        searchResultsViewModel.bindCellViewModels { [weak self] items in
             self?.applySnapshot(with: items)
             self?.imageListView.toggleBackgroundLabelsVisibility(shouldHide: !items.isEmpty)
         }
@@ -50,19 +52,33 @@ class SearchPhotosViewController: UIViewController {
         self.view = imageListView
     }
     
+    func makeDataSource() {
+        let cellRegistration = cellRegistration()
+        let footerRegistration = footerRegistration()
+        let dataSource = DataSourceType(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
+            let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
+            return cell
+        }
+        
+        dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
+            return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
+        }
+        
+        self.dataSource = dataSource
+    }
+    
     func cellRegistration() -> UICollectionView.CellRegistration<PhotoCell, CellViewModel> {
         let cellRegistration = UICollectionView.CellRegistration<PhotoCell, CellViewModel> { cell, indexPath, cellViewModel in
-            cellViewModel.photo.bind { image in
+            cellViewModel.bindPhoto { image in
                 cell.photoView.image = image
             }
-
         }
         return cellRegistration
     }
     
     func footerRegistration() -> UICollectionView.SupplementaryRegistration<BottomRefreshControl> {
         let footerRegistration = UICollectionView.SupplementaryRegistration<BottomRefreshControl>(elementKind: BottomRefreshControl.elementKind) { supplementaryView, elementKind, indexPath in
-            self.searchResultsViewModel.isLoadingNextPage.bind { isLoading in
+            self.searchResultsViewModel.bindIsLoadingNextPage { isLoading in
                 DispatchQueue.main.async {
                     if isLoading {
                         supplementaryView.indicator.startAnimating()
@@ -75,22 +91,13 @@ class SearchPhotosViewController: UIViewController {
         return footerRegistration
     }
     
-    func configureDataSource() -> DataSourceType {
-        let cellRegistration = self.cellRegistration()
-        let footerRegistration = self.footerRegistration()
-        let dataSource = DataSourceType(collectionView: imageListView.collectionView) { collectionView, indexPath, itemIdentifier in
-            let cell = collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
-            return cell
-        }
-        
-        dataSource.supplementaryViewProvider = { collectionView, elementKind, indexPath in
-            return collectionView.dequeueConfiguredReusableSupplementary(using: footerRegistration, for: indexPath)
-        }
-        
-        return dataSource
+    func configureCollectionView() {
+        collectionView.delegate = self
+        collectionView.dataSource = dataSource
+        collectionView.collectionViewLayout = collectionViewLayout()
     }
     
-    func createLayout() -> UICollectionViewCompositionalLayout {
+    func collectionViewLayout() -> UICollectionViewCompositionalLayout {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
@@ -130,16 +137,16 @@ class SearchPhotosViewController: UIViewController {
 }
 
 //MARK: - Extension UICollectionViewDelegate
-extension SearchPhotosViewController: UICollectionViewDelegate {
+extension SearchResultsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.imageListView.collectionView.deselectItem(at: indexPath, animated: true)
+        self.collectionView.deselectItem(at: indexPath, animated: true)
         let detailInfoViewModel = searchResultsViewModel.detailInfoViewModel(forPhotoAt: indexPath)
         let detailInfoVC = PhotoDetailsViewController(viewModel: detailInfoViewModel)
         self.navigationController?.pushViewController(detailInfoVC, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard indexPath.row == searchResultsViewModel.cellViewModels.value.count - 1 && isWaitingForNextPage else { return }
+        guard indexPath.row == searchResultsViewModel.cellViewModelsCount - 1 && isWaitingForNextPage else { return }
         let searchTerm = self.navigationItem.searchController?.searchBar.text ?? ""
         isWaitingForNextPage = false
         searchPhotos(searchTerm: searchTerm)
@@ -147,7 +154,7 @@ extension SearchPhotosViewController: UICollectionViewDelegate {
 }
 
 //MARK: - Extension UISearchBarDelegate
-extension SearchPhotosViewController: UISearchBarDelegate {
+extension SearchResultsViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let searchTerm = searchBar.text ?? ""
         searchPhotos(searchTerm: searchTerm)
@@ -155,4 +162,4 @@ extension SearchPhotosViewController: UISearchBarDelegate {
 }
 
 //MARK: -Extension AlertPresenter
-extension SearchPhotosViewController: AlertPresenter { }
+extension SearchResultsViewController: AlertPresenter { }

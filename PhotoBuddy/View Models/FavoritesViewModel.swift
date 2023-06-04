@@ -39,7 +39,7 @@ class FavoritesViewModel: PhotoListViewModel {
         } catch let error as NSError {
             print("Fetch error: \(error), description: \(error.userInfo)")
         }
-        createCellViewModels(withPhotoInfoList: photoInfoList)
+        makeCellViewModels(withPhotoInfoList: photoInfoList)
     }
     
     private func addNotificationObservers() {

@@ -19,6 +19,10 @@ class SearchResultsViewModel: PhotoListViewModel {
     var photoInfoList: [BriefPhotoInfo] = []
     var cellViewModels = Box<[CellViewModel]>(value: [])
     
+    var cellViewModelsCount: Int {
+        return cellViewModels.value.count
+    }
+    
     var isLoadingNextPage = Box(value: false)
     
     func searchPhotos(searchTerm: String, completion: @escaping (_ alertTitle: String?, _ alertMessage: String?) -> Void) {
@@ -51,7 +55,7 @@ class SearchResultsViewModel: PhotoListViewModel {
                     }
                     self?.numberOfPages = photoResponse.totalPages
                     self?.photoInfoList.append(contentsOf: photoInfoList)
-                    self?.createCellViewModels(withPhotoInfoList: photoInfoList)
+                    self?.makeCellViewModels(withPhotoInfoList: photoInfoList)
                     if photoInfoList.isEmpty {
                         completion("Oops!", "No photos found")
                         return
@@ -59,6 +63,17 @@ class SearchResultsViewModel: PhotoListViewModel {
                     completion(nil, nil)
             }
         }
-        
+    }
+    
+    typealias CellViewModelsBinding = ([CellViewModel]) -> Void
+    
+    func bindCellViewModels(_ binding: CellViewModelsBinding?) {
+        cellViewModels.bind(listener: binding)
+    }
+    
+    typealias IsLoadingNextPageBinding = (Bool) -> Void
+    
+    func bindIsLoadingNextPage(_ binding: IsLoadingNextPageBinding?) {
+        isLoadingNextPage.bind(listener: binding)
     }
 }

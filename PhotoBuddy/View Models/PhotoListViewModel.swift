@@ -19,7 +19,7 @@ extension PhotoListViewModel {
         return viewModel
     }
 
-    internal func createCellViewModels(withPhotoInfoList list: [BriefPhotoInfo]) {
+    func makeCellViewModels(withPhotoInfoList list: [BriefPhotoInfo]) {
         for photoInfo in list {
             let cellViewModel = CellViewModel(photoInfo: photoInfo)
             cellViewModels.value.append(cellViewModel)
