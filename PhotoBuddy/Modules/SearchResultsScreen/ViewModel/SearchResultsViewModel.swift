@@ -7,7 +7,7 @@
 
 import Foundation
 
-class SearchResultsViewModel: PhotoListViewModel {
+final class SearchResultsViewModel: PhotoListViewModel {
     
     
     private var photoFetchingManager = PhotoFetchingManager.shared
@@ -15,13 +15,6 @@ class SearchResultsViewModel: PhotoListViewModel {
     private var numberOfPages: Int = 0
     private var currentPage: Int = 0
     private var currentSearchTerm: String = ""
-    
-    var photoInfoList: [BriefPhotoInfo] = []
-    var cellViewModels = Box<[CellViewModel]>(value: [])
-    
-    var cellViewModelsCount: Int {
-        return cellViewModels.value.count
-    }
     
     var isLoadingNextPage = Box(value: false)
     
@@ -63,12 +56,6 @@ class SearchResultsViewModel: PhotoListViewModel {
                     completion(nil, nil)
             }
         }
-    }
-    
-    typealias CellViewModelsBinding = ([CellViewModel]) -> Void
-    
-    func bindCellViewModels(_ binding: CellViewModelsBinding?) {
-        cellViewModels.bind(listener: binding)
     }
     
     typealias IsLoadingNextPageBinding = (Bool) -> Void

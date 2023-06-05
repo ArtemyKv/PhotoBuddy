@@ -8,19 +8,17 @@
 import Foundation
 import CoreData
 
-class FavoritesViewModel: PhotoListViewModel {
+final class FavoritesViewModel: PhotoListViewModel {
+
+    private var managedContext = CoreDataStack.shared.managedContext
     
-    var photoInfoList: [BriefPhotoInfo] = []
-    var cellViewModels = Box<[CellViewModel]>(value: [])
-    
-    var managedContext = CoreDataStack.shared.managedContext
-    
-    init() {
-        createPhotoList()
+    override init() {
+        super .init()
+        makePhotoList()
         addNotificationObservers()
     }
     
-    private func createPhotoList() {
+    private func makePhotoList() {
         let request = CachedBriefPhotoInfo.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "addToFavoritesDate", ascending: true)]
         do {
@@ -69,5 +67,10 @@ class FavoritesViewModel: PhotoListViewModel {
         guard let index = photoInfoList.firstIndex(of: photoInfo) else { return }
         photoInfoList.remove(at: index)
         cellViewModels.value.remove(at: index)
+    }
+    
+    func cellViewModelAt(_ index: Int) -> CellViewModel? {
+        guard index < cellViewModelsCount else { return nil }
+        return cellViewModels.value[index]
     }
 }

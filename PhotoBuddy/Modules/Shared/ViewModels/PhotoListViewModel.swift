@@ -7,12 +7,14 @@
 
 import Foundation
 
-protocol PhotoListViewModel: AnyObject {
-    var photoInfoList: [BriefPhotoInfo] { get set }
-    var cellViewModels: Box<[CellViewModel]> { get set }
-}
+class PhotoListViewModel {
+    var photoInfoList: [BriefPhotoInfo] = []
+    var cellViewModels = Box<[CellViewModel]>(value: [])
+    
+    var cellViewModelsCount: Int {
+        return cellViewModels.value.count
+    }
 
-extension PhotoListViewModel {
     func detailInfoViewModel(forPhotoAt indexPath: IndexPath) -> PhotoDetailsViewModel {
         let photoInfo = photoInfoList[indexPath.row]
         let viewModel = PhotoDetailsViewModel(briefPhotoInfo: photoInfo)
@@ -24,5 +26,11 @@ extension PhotoListViewModel {
             let cellViewModel = CellViewModel(photoInfo: photoInfo)
             cellViewModels.value.append(cellViewModel)
         }
+    }
+    
+    typealias CellViewModelsBinding = ([CellViewModel]) -> Void
+    
+    func bindCellViewModels(_ binding: CellViewModelsBinding?) {
+        cellViewModels.bind(listener: binding)
     }
 }

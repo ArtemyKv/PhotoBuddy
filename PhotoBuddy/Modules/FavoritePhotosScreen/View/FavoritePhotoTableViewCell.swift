@@ -65,15 +65,15 @@ class FavoritePhotoTableViewCell: UITableViewCell {
         ])
     }
     
-    func updateCell(with image: UIImage?) {
-        guard let image else { return }
-        photoView.image = image
+    func updateCell(with photo: UIImage?) {
+        guard let photo else { return }
+        photoView.image = photo
         
         NSLayoutConstraint.deactivate([photoViewHeightConstraint])
         
         photoViewHeightConstraint = photoView.heightAnchor.constraint(
             equalTo: photoView.widthAnchor,
-            multiplier: image.size.height / image.size.width)
+            multiplier: photo.size.height / photo.size.width)
         
         photoViewHeightConstraint.isActive = true
         

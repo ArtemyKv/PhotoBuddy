@@ -9,13 +9,13 @@ import Foundation
 import UIKit.UIImage
 
 class CellViewModel {
-    var photoFetchingManager = PhotoFetchingManager.shared
+    private var photoFetchingManager = PhotoFetchingManager.shared
     
-    var photoInfo: BriefPhotoInfo
+    private var photoInfo: BriefPhotoInfo
     
-    var photo: Box<UIImage?> = Box(value: nil)
-    var authorName = Box(value: "")
-    var creatinDate = Box(value: "")
+    private var photo: Box<UIImage?> = Box(value: nil)
+    private var authorName = Box(value: "")
+    private var creatinDate = Box(value: "")
     
     init(photoInfo: BriefPhotoInfo) {
         self.photoInfo = photoInfo
@@ -35,9 +35,14 @@ class CellViewModel {
     }
     
     typealias PhotoBinding = (UIImage?) -> Void
+    typealias StringBinding = (String) -> Void
     
     func bindPhoto(_ binding: PhotoBinding?) {
         photo.bind(listener: binding)
+    }
+    
+    func bindAuthorName(_ binding: StringBinding?) {
+        authorName.bind(listener: binding)
     }
 }
 
