@@ -43,6 +43,7 @@
 		9CCA2C0B291E001700B4BCC5 /* ImageListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCA2C0A291E001700B4BCC5 /* ImageListView.swift */; };
 		9CCA2C0D291E0B6A00B4BCC5 /* PhotoFetchingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCA2C0C291E0B6A00B4BCC5 /* PhotoFetchingManager.swift */; };
 		B66AE6BA2A2D6F4A00FE13AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B66AE6B92A2D6F4A00FE13AD /* LaunchScreen.storyboard */; };
+		B6A941942A3168E400C8254F /* AlertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A941932A3168E400C8254F /* AlertViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,6 +85,7 @@
 		9CCA2C0A291E001700B4BCC5 /* ImageListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListView.swift; sourceTree = "<group>"; };
 		9CCA2C0C291E0B6A00B4BCC5 /* PhotoFetchingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFetchingManager.swift; sourceTree = "<group>"; };
 		B66AE6B92A2D6F4A00FE13AD /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B6A941932A3168E400C8254F /* AlertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +198,7 @@
 			children = (
 				9C45E17A2921E7AF00547B6D /* SearchResultsViewModel.swift */,
 				9C45E17C2921E7C300547B6D /* CellViewModel.swift */,
+				B6A941932A3168E400C8254F /* AlertViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 				9C45E1832923258700547B6D /* PhotoCell.swift in Sources */,
 				9C82CF942924712C00CC126D /* TabBarController.swift in Sources */,
 				9C45E16F2921CBD000547B6D /* BriefPhotoInfo.swift in Sources */,
+				B6A941942A3168E400C8254F /* AlertViewModel.swift in Sources */,
 				9C45E18129231F4A00547B6D /* BlurHashDecode.swift in Sources */,
 				9C82CF9A29248D5A00CC126D /* RoundButton.swift in Sources */,
 				9C12FFBC292B3780001506FC /* PhotoInfoViewModel.swift in Sources */,
