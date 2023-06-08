@@ -12,7 +12,6 @@ class SearchResultsViewController: UIViewController {
     
     var dataSource: DataSourceType!
     var searchResultsViewModel = SearchResultsViewModel()
-    private var isWaitingForNextPage = true
     
     enum Section {
         case main
@@ -26,17 +25,18 @@ class SearchResultsViewController: UIViewController {
     var collectionView: UICollectionView {
         return imageListView.collectionView
     }
+    
+    override func loadView() {
+        let imageListView = ImageListView()
+        self.view = imageListView
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureSearchController()
         makeDataSource()
         configureCollectionView()
-        searchResultsViewModel.bindCellViewModels { [weak self] items in
-            self?.applySnapshot(with: items)
-            self?.imageListView.toggleBackgroundLabelsVisibility(shouldHide: !items.isEmpty)
-        }
-        
+        setupBindings()
     }
     
     func configureSearchController() {
@@ -45,11 +45,6 @@ class SearchResultsViewController: UIViewController {
         searchController.automaticallyShowsCancelButton = false
         searchController.automaticallyShowsSearchResultsController = false
         self.navigationItem.searchController = searchController
-    }
-    
-    override func loadView() {
-        let imageListView = ImageListView()
-        self.view = imageListView
     }
     
     func makeDataSource() {
@@ -78,7 +73,7 @@ class SearchResultsViewController: UIViewController {
     
     func footerRegistration() -> UICollectionView.SupplementaryRegistration<BottomRefreshControl> {
         let footerRegistration = UICollectionView.SupplementaryRegistration<BottomRefreshControl>(elementKind: BottomRefreshControl.elementKind) { supplementaryView, elementKind, indexPath in
-            self.searchResultsViewModel.bindIsLoadingNextPage { isLoading in
+            self.searchResultsViewModel.bindIsLoading { isLoading in
                 DispatchQueue.main.async {
                     if isLoading {
                         supplementaryView.indicator.startAnimating()
@@ -125,13 +120,15 @@ class SearchResultsViewController: UIViewController {
         dataSource.apply(snapshot)
     }
     
-    func searchPhotos(searchTerm: String) {
-        self.searchResultsViewModel.searchPhotos(searchTerm: searchTerm) { [weak self] alertTitle, alertMessage in
-            if let alertTitle, let alertMessage {
-                self?.presentErrorAlert(title: alertTitle, message: alertMessage)
-                return
-            }
-            self?.isWaitingForNextPage = true
+    func setupBindings() {
+        searchResultsViewModel.bindCellViewModels { [weak self] items in
+            self?.applySnapshot(with: items)
+            self?.imageListView.toggleBackgroundLabelsVisibility(shouldHide: !items.isEmpty)
+        }
+        
+        searchResultsViewModel.bindAlertViewModel { [weak self] alertViewModel in
+            guard let alertViewModel else { return }
+            self?.presentErrorAlert(title: alertViewModel.title, message: alertViewModel.message)
         }
     }
 }
@@ -146,18 +143,15 @@ extension SearchResultsViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard indexPath.row == searchResultsViewModel.cellViewModelsCount - 1 && isWaitingForNextPage else { return }
-        let searchTerm = self.navigationItem.searchController?.searchBar.text ?? ""
-        isWaitingForNextPage = false
-        searchPhotos(searchTerm: searchTerm)
+        searchResultsViewModel.viewWillDisplayCell(forItemAt: indexPath.row)
     }
 }
 
 //MARK: - Extension UISearchBarDelegate
 extension SearchResultsViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let searchTerm = searchBar.text ?? ""
-        searchPhotos(searchTerm: searchTerm)
+        let searchText = searchBar.text ?? ""
+        searchResultsViewModel.searchButtonClicked(searchText: searchText)
     }
 }
 
