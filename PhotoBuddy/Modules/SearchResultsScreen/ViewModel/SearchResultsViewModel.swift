@@ -19,8 +19,7 @@ protocol SearchResultsViewModelProtocol: AnyObject {
     func bindAlertViewModel(_ binding: AlertViewModelBinding?)
     
     func searchButtonClicked(searchText: String)
-    func viewWillDisplayCell(forItemAt index: Int)
-    
+    func viewDidEndDecelerating(withVisibleItemsAt indexPaths: [IndexPath])
 }
 
 final class SearchResultsViewModel: SearchResultsViewModelProtocol {
@@ -62,7 +61,7 @@ final class SearchResultsViewModel: SearchResultsViewModelProtocol {
                         self?.setAlertWith(title: "Oops!", message: "No photos found")
                         return
                     }
-            }
+                }
         }
     }
     
@@ -125,8 +124,9 @@ final class SearchResultsViewModel: SearchResultsViewModelProtocol {
         performNewSearch(withSearchText: searchText)
     }
     
-    func viewWillDisplayCell(forItemAt index: Int) {
-        guard index == cellViewModels.value.count - 1 && isWaitingForNextPage else { return }
+    func viewDidEndDecelerating(withVisibleItemsAt indexPaths: [IndexPath]) {
+        guard indexPaths.contains(IndexPath(row: cellViewModels.value.count - 1, section: 0)) else { return }
+        guard isWaitingForNextPage else { return }
         guard currentPage < numberOfPages else { return }
         loadNextPage()
         

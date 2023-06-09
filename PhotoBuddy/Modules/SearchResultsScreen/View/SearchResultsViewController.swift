@@ -142,8 +142,10 @@ extension SearchResultsViewController: UICollectionViewDelegate {
         self.navigationController?.pushViewController(detailInfoVC, animated: true)
     }
     
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        searchResultsViewModel.viewWillDisplayCell(forItemAt: indexPath.row)
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    let indexPath = collectionView.indexPathsForVisibleItems
+            searchResultsViewModel.viewDidEndDecelerating(withVisibleItemsAt: indexPath)
+
     }
 }
 
