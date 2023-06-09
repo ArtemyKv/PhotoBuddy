@@ -28,17 +28,17 @@ class FavoritePhotosViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.cellViewModelsCount
+        return viewModel.numberOfRowsInList()
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard
             let cell = tableView.dequeueReusableCell(withIdentifier: FavoritePhotoTableViewCell.identifier, for: indexPath) as? FavoritePhotoTableViewCell,
-            let cellViewModel = viewModel.cellViewModelAt(indexPath.row)
+            let cellViewModel = viewModel.cellViewModel(at: indexPath.row)
         else { return UITableViewCell() }
         
         cellViewModel.bindPhoto { photo in
-            cell.updateCell(with: photo)
+            cell.update(with: photo)
         }
         cellViewModel.bindAuthorName { name in
             cell.authorNameLabel.text = name

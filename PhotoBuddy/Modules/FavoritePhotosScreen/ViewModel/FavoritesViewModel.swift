@@ -8,12 +8,23 @@
 import Foundation
 import CoreData
 
-final class FavoritesViewModel: PhotoListViewModel {
+protocol FavoritesViewModelProtocol: AnyObject {
+    func numberOfRowsInList() -> Int
+    func cellViewModel(at index: Int) -> CellViewModel?
+    func detailInfoViewModel(forPhotoAt indexPath: IndexPath) -> PhotoDetailsViewModel
+
+    typealias CellViewModelsBinding = ([CellViewModel]) -> Void
+    func bindCellViewModels(_ binding: CellViewModelsBinding?)
+}
+
+final class FavoritesViewModel:FavoritesViewModelProtocol {
 
     private var managedContext = CoreDataStack.shared.managedContext
     
-    override init() {
-        super .init()
+    private var photoInfoList: [BriefPhotoInfo] = []
+    private var cellViewModels = Box<[CellViewModel]>(value: [])
+    
+    init() {
         makePhotoList()
         addNotificationObservers()
     }
@@ -58,6 +69,13 @@ final class FavoritesViewModel: PhotoListViewModel {
         
     }
     
+    private func makeCellViewModels(withPhotoInfoList list: [BriefPhotoInfo]) {
+        for photoInfo in list {
+            let cellViewModel = CellViewModel(photoInfo: photoInfo)
+            cellViewModels.value.append(cellViewModel)
+        }
+    }
+    
     private func addPhotoToList(photoInfo: BriefPhotoInfo) {
         photoInfoList.append(photoInfo)
         cellViewModels.value.append(CellViewModel(photoInfo: photoInfo))
@@ -69,8 +87,22 @@ final class FavoritesViewModel: PhotoListViewModel {
         cellViewModels.value.remove(at: index)
     }
     
-    func cellViewModelAt(_ index: Int) -> CellViewModel? {
-        guard index < cellViewModelsCount else { return nil }
+    func numberOfRowsInList() -> Int {
+        return cellViewModels.value.count
+    }
+    
+    func cellViewModel(at index: Int) -> CellViewModel? {
+        guard index < cellViewModels.value.count else { return nil }
         return cellViewModels.value[index]
+    }
+    
+    func detailInfoViewModel(forPhotoAt indexPath: IndexPath) -> PhotoDetailsViewModel {
+        let photoInfo = photoInfoList[indexPath.row]
+        let viewModel = PhotoDetailsViewModel(briefPhotoInfo: photoInfo)
+        return viewModel
+    }
+
+    func bindCellViewModels(_ binding: CellViewModelsBinding?) {
+        cellViewModels.bind(listener: binding)
     }
 }

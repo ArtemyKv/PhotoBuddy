@@ -65,7 +65,7 @@ class FavoritePhotoTableViewCell: UITableViewCell {
         ])
     }
     
-    func updateCell(with photo: UIImage?) {
+    func update(with photo: UIImage?) {
         guard let photo else { return }
         photoView.image = photo
         

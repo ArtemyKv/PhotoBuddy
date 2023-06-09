@@ -8,7 +8,18 @@
 import Foundation
 import UIKit.UIImage
 
-class CellViewModel {
+protocol CellViewModelProtocol: AnyObject {
+    init(photoInfo: BriefPhotoInfo)
+    
+    typealias PhotoBinding = (UIImage?) -> Void
+    typealias StringBinding = (String) -> Void
+    
+    func bindPhoto(_ binding: PhotoBinding?)
+    func bindAuthorName(_ binding: StringBinding?)
+    
+}
+
+final class CellViewModel: CellViewModelProtocol {
     private var photoFetchingManager = PhotoFetchingManager.shared
     
     private var photoInfo: BriefPhotoInfo
@@ -23,7 +34,7 @@ class CellViewModel {
         fetchImage()
     }
 
-    func configure() {
+    private func configure() {
         self.photo.value = UIImage(blurHash: photoInfo.blurHash, size: CGSize(width: 32, height: 32))
         self.authorName.value = photoInfo.authorName
     }
@@ -33,9 +44,6 @@ class CellViewModel {
             self?.photo.value = image
         }
     }
-    
-    typealias PhotoBinding = (UIImage?) -> Void
-    typealias StringBinding = (String) -> Void
     
     func bindPhoto(_ binding: PhotoBinding?) {
         photo.bind(listener: binding)
