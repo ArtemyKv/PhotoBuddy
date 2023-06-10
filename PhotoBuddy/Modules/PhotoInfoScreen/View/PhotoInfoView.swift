@@ -45,6 +45,22 @@ class PhotoInfoView: UIView {
         return stack
     }()
     
+    override init(frame: CGRect) {
+        super .init(frame: frame)
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupView() {
+        backgroundColor = .white
+        self.addSubview(vStack)
+        setupStack()
+        setupConstraints()
+    }
+    
     private func configureLabel() -> UILabel {
         let label = UILabel()
         label.textAlignment = .right
@@ -67,7 +83,7 @@ class PhotoInfoView: UIView {
         vStack.addArrangedSubview(firstRowTitleLabel)
         vStack.addArrangedSubview(descriptionLabel)
         
-        for i in 0...rowsCount - 1 {
+        for i in 0..<rowsCount {
             let hStack = UIStackView()
             hStack.axis = .horizontal
             hStack.alignment = .fill
@@ -89,20 +105,5 @@ class PhotoInfoView: UIView {
             vStack.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
             vStack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
         ])
-    }
-    
-    private func setupView() {
-        self.addSubview(vStack)
-        setupStack()
-        setupConstraints()
-    }
-    
-    override init(frame: CGRect) {
-        super .init(frame: frame)
-        setupView()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

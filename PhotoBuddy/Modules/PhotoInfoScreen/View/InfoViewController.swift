@@ -32,30 +32,33 @@ class InfoViewController: UIViewController {
     
     override func viewDidLoad() {
         super .viewDidLoad()
-        view.backgroundColor = .white
+        setupNavigationBar()
+        setupBindings()
+        
+    }
+    
+    private func setupNavigationBar() {
         self.navigationItem.setLeftBarButton(
             UIBarButtonItem(title: "Close", style: .plain, target: self, action: #selector(closeButtonPressed)),
             animated: true
         )
-        configureView()
-        
     }
     
-    func configureView() {
-        photoInfoViewModel.authorName.bind { [weak self] value in
-            self?.photoInfoView.authorNameLabel.text = value
+    private func setupBindings() {
+        photoInfoViewModel.bindAuthorName { [weak self] text in
+            self?.photoInfoView.authorNameLabel.text = text
         }
-        photoInfoViewModel.description.bind { [weak self] value in
-            self?.photoInfoView.descriptionLabel.text = value
+        photoInfoViewModel.bindDescription { [weak self] text in
+            self?.photoInfoView.descriptionLabel.text = text
         }
-        photoInfoViewModel.location.bind { [weak self] value in
-            self?.photoInfoView.locationLabel.text = value
+        photoInfoViewModel.bindLocation { [weak self] text in
+            self?.photoInfoView.locationLabel.text = text
         }
-        photoInfoViewModel.creatioDate.bind { [weak self] value in
-            self?.photoInfoView.creationDateLabel.text = value
+        photoInfoViewModel.bindCreationDate { [weak self] text in
+            self?.photoInfoView.creationDateLabel.text = text
         }
-        photoInfoViewModel.downloads.bind { [weak self] value in
-            self?.photoInfoView.downloadsCountLabel.text = value
+        photoInfoViewModel.bindDownloads { [weak self] text in
+            self?.photoInfoView.downloadsCountLabel.text = text
         }
     }
     

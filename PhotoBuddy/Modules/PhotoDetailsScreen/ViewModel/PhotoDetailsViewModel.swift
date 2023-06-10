@@ -26,6 +26,7 @@ protocol PhotoDetailsViewModelProtocol: AnyObject {
     func viewWillDisappear()
     func toggleFavoritesButtonPressed()
     func getPhoto() -> UIImage?
+    func photoInfoViewModel() -> PhotoInfoViewModel
 }
     
 class PhotoDetailsViewModel: PhotoDetailsViewModelProtocol {
@@ -39,8 +40,7 @@ class PhotoDetailsViewModel: PhotoDetailsViewModelProtocol {
     private var cachedBriefPhotoInfo: CachedBriefPhotoInfo?
     private var briefPhotoInfo: BriefPhotoInfo
     private var isInitialyInFavorites = false
-    
-    let photoInfoViewModel = PhotoInfoViewModel()
+    private var detailPhotoInfo: DetailPhotoInfo?
     
     //View properties
     private var photo: Box<UIImage?> = Box(value: nil)
@@ -108,7 +108,7 @@ class PhotoDetailsViewModel: PhotoDetailsViewModelProtocol {
                 completion()
                 return
             }
-            self?.photoInfoViewModel.detailPhotoInfo = info
+            self?.detailPhotoInfo = info
             self?.photoFetchingManager.downloadPhoto(url: info.photoURL, completion: { photo in
                 self?.photo.value = photo
                 completion()
@@ -148,6 +148,12 @@ class PhotoDetailsViewModel: PhotoDetailsViewModelProtocol {
     
     func getPhoto() -> UIImage? {
         return photo.value
+    }
+    
+    func photoInfoViewModel() -> PhotoInfoViewModel {
+        let viewModel = PhotoInfoViewModel()
+        viewModel.detailPhotoInfo = detailPhotoInfo
+        return viewModel
     }
     
     //MARK: - Bindings

@@ -89,7 +89,7 @@ extension PhotoDetailsViewController: PhotoDetailsViewDelegate {
     }
     
     func infoButtonPressed() {
-        let viewModel = viewModel.photoInfoViewModel
+        let viewModel = viewModel.photoInfoViewModel()
         let infoViewController = InfoViewController(photoInfoViewModel: viewModel)
         let navigationController = UINavigationController(rootViewController: infoViewController)
         self.present(navigationController, animated: true)
