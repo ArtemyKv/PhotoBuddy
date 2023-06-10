@@ -27,29 +27,16 @@ class PhotoDetailsViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func loadView() {
+        let photoDetailsView = PhotoDetailsView()
+        photoDetailsView.delegate = self
+        self.view = photoDetailsView
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.image.bind { [weak self] photo in
-            guard let photo = photo else { return }
-            self?.photoDetailsView.imageScrollView.set(image: photo)
-        }
-        viewModel.isInFavorites.bind { [weak self] isInFavorites in
-            self?.photoDetailsView.configureFavoritesButton(isInFavorites: isInFavorites)
-        }
-        
-        viewModel.authorName.bind { [weak self] authorName in
-            self?.navigationItem.title = authorName
-        }
-        
-        photoDetailsView.activityIndicatorView.startAnimating()
-        
-        viewModel.fetchDetailPhotoInfo { [weak self] errorTitle, errorMessage in
-            if let errorTitle, let errorMessage {
-                self?.presentErrorAlert(title: errorTitle, message: errorMessage)
-            }
-            self?.photoDetailsView.activityIndicatorView.stopAnimating()
-        }
-
+        setupBindings()
+        viewModel.viewDidLoad()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -57,7 +44,6 @@ class PhotoDetailsViewController: UIViewController {
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.tabBarController?.tabBar.isHidden = true
-
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -65,32 +51,41 @@ class PhotoDetailsViewController: UIViewController {
         self.tabBarController?.tabBar.isHidden = false
         self.navigationController?.navigationBar.shadowImage = nil
         self.navigationController?.navigationBar.setBackgroundImage(nil, for: .default)
-
-        viewModel.updateFavorites()
+        viewModel.viewWillDisappear()
     }
     
-    override func loadView() {
-        let photoDetailsView = PhotoDetailsView()
-        photoDetailsView.delegate = self
-        self.view = photoDetailsView
-    }
-    
-    func saveImageToDevice() {
-        guard let photo = viewModel.image.value else { return }
-        UIImageWriteToSavedPhotosAlbum(photo, self, #selector(imageDidFinishSavingOnDevice), nil)
-    }
-    
-    @objc func imageDidFinishSavingOnDevice(
-        image: UIImage!,
-        didFinishSavingWithError error: NSError!,
-        contextInfo: UnsafeRawPointer) {
-            self.photoDetailsView.animateSavingCompletion()
+    func setupBindings() {
+        viewModel.bindPhoto { [weak self] photo in
+            guard let photo = photo else { return }
+            self?.photoDetailsView.imageScrollView.set(image: photo)
+        }
+        
+        viewModel.bindIsInFavorites { [weak self] isInFavorites in
+            self?.photoDetailsView.configureFavoritesButton(isInFavorites: isInFavorites)
+        }
+        
+        viewModel.bindAuthorName { [weak self] authorName in
+            self?.navigationItem.title = authorName
+        }
+        
+        viewModel.bindIsLoading { [weak self] isLoading in
+            if isLoading {
+                self?.photoDetailsView.activityIndicatorView.startAnimating()
+            } else {
+                self?.photoDetailsView.activityIndicatorView.stopAnimating()
+            }
+        }
+        
+        viewModel.bindAlertViewModel { [weak self] alertViewModel in
+            guard let alertViewModel else { return }
+            self?.presentErrorAlert(title: alertViewModel.title, message: alertViewModel.message)
+        }
     }
 }
 
 extension PhotoDetailsViewController: PhotoDetailsViewDelegate {
     func toggleFavoritesButtonPressed() {
-        viewModel.isInFavorites.value.toggle()
+        viewModel.toggleFavoritesButtonPressed()
     }
     
     func infoButtonPressed() {
@@ -101,25 +96,23 @@ extension PhotoDetailsViewController: PhotoDetailsViewDelegate {
     }
     
     func saveButtonPressed() {
-        
-        PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] status in
-            switch status {
-                case .authorized:
-                    DispatchQueue.main.async {
-                        self?.saveImageToDevice()
-                        self?.photoDetailsView.animateImageSaving()
-                    }
-                case .denied:
-                    DispatchQueue.main.async {
-                        self?.presentAuthorizationStatusAlert(title: "Access denied", message: "Access to device photo library denied. You can change this in Settings")
-                    }
-                default:
-                    break
-            }
+        DispatchQueue.main.async {
+            self.saveImageOnDevice()
+            self.photoDetailsView.animateImageSaving()
         }
     }
     
-
+    func saveImageOnDevice() {
+        guard let photo = viewModel.getPhoto() else { return }
+        UIImageWriteToSavedPhotosAlbum(photo, self, #selector(imageDidFinishSavingOnDevice), nil)
+    }
+    
+    @objc func imageDidFinishSavingOnDevice(
+        image: UIImage!,
+        didFinishSavingWithError error: NSError!,
+        contextInfo: UnsafeRawPointer) {
+            self.photoDetailsView.animateSavingCompletion()
+    }
 }
 
 extension PhotoDetailsViewController: AlertPresenter { }
