@@ -20,6 +20,8 @@ protocol SearchResultsViewModelProtocol: AnyObject {
     
     func searchButtonClicked(searchText: String)
     func viewDidEndDecelerating(withVisibleItemsAt indexPaths: [IndexPath])
+    
+    func detailInfoViewModel(forPhotoAt indexPath: IndexPath) -> PhotoDetailsViewModel
 }
 
 final class SearchResultsViewModel: SearchResultsViewModelProtocol {

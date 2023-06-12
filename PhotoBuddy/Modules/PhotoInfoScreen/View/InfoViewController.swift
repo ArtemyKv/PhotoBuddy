@@ -9,14 +9,14 @@ import UIKit
 
 class InfoViewController: UIViewController {
     
-    var photoInfoViewModel: PhotoInfoViewModel
+    let photoInfoViewModel: PhotoInfoViewModelProtocol
     
     var photoInfoView: PhotoInfoView! {
         guard isViewLoaded else { return nil }
         return (view as? PhotoInfoView)
     }
     
-    init(photoInfoViewModel: PhotoInfoViewModel) {
+    init(photoInfoViewModel: PhotoInfoViewModelProtocol) {
         self.photoInfoViewModel = photoInfoViewModel
         super .init(nibName: nil, bundle: nil)
     }

@@ -11,7 +11,7 @@ class SearchResultsViewController: UIViewController {
     typealias DataSourceType = UICollectionViewDiffableDataSource<Section, CellViewModel>
     
     var dataSource: DataSourceType!
-    var searchResultsViewModel = SearchResultsViewModel()
+    let viewModel: SearchResultsViewModelProtocol
     
     enum Section {
         case main
@@ -24,6 +24,15 @@ class SearchResultsViewController: UIViewController {
     
     var collectionView: UICollectionView {
         return imageListView.collectionView
+    }
+    
+    init(viewModel: SearchResultsViewModelProtocol) {
+        self.viewModel = viewModel
+        super .init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func loadView() {
@@ -73,7 +82,7 @@ class SearchResultsViewController: UIViewController {
     
     func footerRegistration() -> UICollectionView.SupplementaryRegistration<BottomRefreshControl> {
         let footerRegistration = UICollectionView.SupplementaryRegistration<BottomRefreshControl>(elementKind: BottomRefreshControl.elementKind) { supplementaryView, elementKind, indexPath in
-            self.searchResultsViewModel.bindIsLoading { isLoading in
+            self.viewModel.bindIsLoading { isLoading in
                 DispatchQueue.main.async {
                     if isLoading {
                         supplementaryView.indicator.startAnimating()
@@ -121,12 +130,12 @@ class SearchResultsViewController: UIViewController {
     }
     
     func setupBindings() {
-        searchResultsViewModel.bindCellViewModels { [weak self] items in
+        viewModel.bindCellViewModels { [weak self] items in
             self?.applySnapshot(with: items)
             self?.imageListView.toggleBackgroundLabelsVisibility(shouldHide: !items.isEmpty)
         }
         
-        searchResultsViewModel.bindAlertViewModel { [weak self] alertViewModel in
+        viewModel.bindAlertViewModel { [weak self] alertViewModel in
             guard let alertViewModel else { return }
             self?.presentErrorAlert(title: alertViewModel.title, message: alertViewModel.message)
         }
@@ -137,14 +146,14 @@ class SearchResultsViewController: UIViewController {
 extension SearchResultsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.collectionView.deselectItem(at: indexPath, animated: true)
-        let detailInfoViewModel = searchResultsViewModel.detailInfoViewModel(forPhotoAt: indexPath)
+        let detailInfoViewModel = viewModel.detailInfoViewModel(forPhotoAt: indexPath)
         let detailInfoVC = PhotoDetailsViewController(viewModel: detailInfoViewModel)
         self.navigationController?.pushViewController(detailInfoVC, animated: true)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
     let indexPath = collectionView.indexPathsForVisibleItems
-            searchResultsViewModel.viewDidEndDecelerating(withVisibleItemsAt: indexPath)
+            viewModel.viewDidEndDecelerating(withVisibleItemsAt: indexPath)
 
     }
 }
@@ -153,7 +162,7 @@ extension SearchResultsViewController: UICollectionViewDelegate {
 extension SearchResultsViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let searchText = searchBar.text ?? ""
-        searchResultsViewModel.searchButtonClicked(searchText: searchText)
+        viewModel.searchButtonClicked(searchText: searchText)
     }
 }
 

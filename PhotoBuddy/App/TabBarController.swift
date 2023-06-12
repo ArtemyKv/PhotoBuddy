@@ -17,10 +17,12 @@ final class TabBarController: UITabBarController {
     }
     
     private func makeChildControllers() {
-        let searchPhotosVC = SearchResultsViewController()
+        let searchResultsViewModel = SearchResultsViewModel()
+        let searchPhotosVC = SearchResultsViewController(viewModel: searchResultsViewModel)
         let firstTabNavigationController = UINavigationController(rootViewController: searchPhotosVC)
         
-        let favoritePhotosVC = FavoritePhotosViewController()
+        let favoritesViewModel = FavoritesViewModel()
+        let favoritePhotosVC = FavoritePhotosViewController(viewModel: favoritesViewModel)
         let secondTabNavigationController = UINavigationController(rootViewController: favoritePhotosVC)
         viewControllers = [firstTabNavigationController, secondTabNavigationController]
         

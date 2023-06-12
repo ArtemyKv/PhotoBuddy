@@ -11,7 +11,7 @@ import Photos
 
 class PhotoDetailsViewController: UIViewController {
     
-    let viewModel: PhotoDetailsViewModel
+    let viewModel: PhotoDetailsViewModelProtocol
     
     var photoDetailsView: PhotoDetailsView! {
         guard isViewLoaded else { return nil }
