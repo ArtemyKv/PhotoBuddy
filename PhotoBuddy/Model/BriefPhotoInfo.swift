@@ -9,7 +9,7 @@ import Foundation
 
 struct BriefPhotoInfo: Codable {
     var id: String
-    var blurHash: String
+    var blurHash: String?
     var url: URL
     var authorName: String
     
@@ -32,7 +32,7 @@ struct BriefPhotoInfo: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         self.id = try container.decode(String.self, forKey: .id)
-        self.blurHash = try container.decode(String.self, forKey: .blurHash)
+        self.blurHash = try container.decode(String?.self, forKey: .blurHash)
         let urlNestedContainer = try container.nestedContainer(keyedBy: CodingKeys.URLCodingKeys.self, forKey: .url)
         self.url = try urlNestedContainer.decode(URL.self, forKey: .url)
         let userNestedContainer = try container.nestedContainer(keyedBy: CodingKeys.UserCodingKeys.self, forKey: .authorName)

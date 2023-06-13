@@ -35,7 +35,11 @@ final class CellViewModel: CellViewModelProtocol {
     }
 
     private func configure() {
-        self.photo.value = UIImage(blurHash: photoInfo.blurHash, size: CGSize(width: 32, height: 32))
+        if let blurHash = photoInfo.blurHash {
+            self.photo.value = UIImage(blurHash: blurHash, size: CGSize(width: 32, height: 32))
+        } else {
+            self.photo.value = UIImage(systemName: "exclamationmark.triangle")
+        }
         self.authorName.value = photoInfo.authorName
     }
     
