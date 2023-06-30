@@ -43,6 +43,7 @@
 		9CCA2C0B291E001700B4BCC5 /* ImageListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCA2C0A291E001700B4BCC5 /* ImageListView.swift */; };
 		9CCA2C0D291E0B6A00B4BCC5 /* PhotoFetchingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CCA2C0C291E0B6A00B4BCC5 /* PhotoFetchingManager.swift */; };
 		B66AE6BA2A2D6F4A00FE13AD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B66AE6B92A2D6F4A00FE13AD /* LaunchScreen.storyboard */; };
+		B67794952A4E73390071E560 /* SearchResultsLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B67794942A4E73390071E560 /* SearchResultsLayout.swift */; };
 		B6A941942A3168E400C8254F /* AlertViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6A941932A3168E400C8254F /* AlertViewModel.swift */; };
 /* End PBXBuildFile section */
 
@@ -85,6 +86,7 @@
 		9CCA2C0A291E001700B4BCC5 /* ImageListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageListView.swift; sourceTree = "<group>"; };
 		9CCA2C0C291E0B6A00B4BCC5 /* PhotoFetchingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFetchingManager.swift; sourceTree = "<group>"; };
 		B66AE6B92A2D6F4A00FE13AD /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B67794942A4E73390071E560 /* SearchResultsLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsLayout.swift; sourceTree = "<group>"; };
 		B6A941932A3168E400C8254F /* AlertViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -189,6 +191,7 @@
 				9CCA2BFA291DE70500B4BCC5 /* SearchResultsViewController.swift */,
 				9CCA2C0A291E001700B4BCC5 /* ImageListView.swift */,
 				9C45E1822923258700547B6D /* PhotoCell.swift */,
+				B67794942A4E73390071E560 /* SearchResultsLayout.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -424,6 +427,7 @@
 				9C45E17F2921FA3900547B6D /* Box.swift in Sources */,
 				9C12FFCD292C7734001506FC /* PhotoListViewModel.swift in Sources */,
 				9CCA2BF9291DE70500B4BCC5 /* SceneDelegate.swift in Sources */,
+				B67794952A4E73390071E560 /* SearchResultsLayout.swift in Sources */,
 				9C82CF9629247D2B00CC126D /* PhotoDetailsViewController.swift in Sources */,
 				9C82CF9C2924ADB100CC126D /* ImageScrollView.swift in Sources */,
 				9C12FFCB292C75ED001506FC /* FavoritesViewModel.swift in Sources */,
