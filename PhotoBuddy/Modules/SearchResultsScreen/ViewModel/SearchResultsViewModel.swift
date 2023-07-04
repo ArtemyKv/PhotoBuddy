@@ -18,6 +18,7 @@ protocol SearchResultsViewModelProtocol: AnyObject {
     func bindCellViewModels(_ binding: CellViewModelsBinding?)
     func bindAlertViewModel(_ binding: AlertViewModelBinding?)
     
+    func imageSizeForItem(at indexPath: IndexPath) -> CGSize?
     func searchButtonClicked(searchText: String)
     func viewDidEndDecelerating(withVisibleItemsAt indexPaths: [IndexPath])
     
@@ -113,10 +114,13 @@ final class SearchResultsViewModel: SearchResultsViewModelProtocol {
     }
 
     private func makeCellViewModels(withPhotoInfoList list: [BriefPhotoInfo]) {
+        var _cellViewModels: [CellViewModel] = []
         for photoInfo in list {
             let cellViewModel = CellViewModel(photoInfo: photoInfo)
-            cellViewModels.value.append(cellViewModel)
+            _cellViewModels.append(cellViewModel)
         }
+        self.cellViewModels.value.append(contentsOf: _cellViewModels)
+
     }
     
     //MARK: - Inputs
@@ -132,5 +136,13 @@ final class SearchResultsViewModel: SearchResultsViewModelProtocol {
         guard currentPage < numberOfPages else { return }
         loadNextPage()
         
+    }
+    
+    func imageSizeForItem(at indexPath: IndexPath) -> CGSize? {
+        guard indexPath.row < photoInfoList.count else { return nil }
+        let width = photoInfoList[indexPath.row].width
+        let height = photoInfoList[indexPath.row].height
+        return CGSize(width: width, height: height)
+
     }
 }

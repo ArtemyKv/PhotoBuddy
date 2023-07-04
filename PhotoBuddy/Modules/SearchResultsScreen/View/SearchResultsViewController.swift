@@ -12,7 +12,7 @@ class SearchResultsViewController: UIViewController {
     
     var dataSource: DataSourceType!
     let viewModel: SearchResultsViewModelProtocol
-    
+        
     enum Section {
         case main
     }
@@ -96,37 +96,18 @@ class SearchResultsViewController: UIViewController {
     }
     
     func configureCollectionView() {
+        let searchResultsLayout = SearchResultsLayout()
+        searchResultsLayout.delegate = self
+        collectionView.collectionViewLayout = searchResultsLayout
         collectionView.delegate = self
         collectionView.dataSource = dataSource
-        collectionView.collectionViewLayout = collectionViewLayout()
-    }
-    
-    func collectionViewLayout() -> UICollectionViewCompositionalLayout {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(0.3))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 3)
-        group.interItemSpacing = NSCollectionLayoutSpacing.fixed(8)
-        
-        let section = NSCollectionLayoutSection(group: group)
-        section.interGroupSpacing = 8
-        
-        let sectionFooterSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.25))
-
-        let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: sectionFooterSize, elementKind: BottomRefreshControl.elementKind, alignment: .bottom)
-
-        section.boundarySupplementaryItems = [footer]
-        
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        return layout
     }
     
     func applySnapshot(with items: [CellViewModel]) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, CellViewModel>()
         snapshot.appendSections([.main])
         snapshot.appendItems(items)
-        dataSource.apply(snapshot)
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     func setupBindings() {
@@ -168,3 +149,15 @@ extension SearchResultsViewController: UISearchBarDelegate {
 
 //MARK: -Extension AlertPresenter
 extension SearchResultsViewController: AlertPresenter { }
+
+//MARK: -Extension SearchResultsLayoutDelegate
+extension SearchResultsViewController: SearchResultsLayoutDelegate {
+    func collectionView(_ collectionView: UICollectionView, heightForPhotoAtIndexPath indexPath: IndexPath) -> CGFloat {
+        guard let imageSize = viewModel.imageSizeForItem(at: indexPath) else { return 180 }
+
+        let imageScale = (collectionView.bounds.width / 2) / imageSize.width
+        let imageHeight = imageSize.height * imageScale
+        return imageHeight
+        
+    }
+}

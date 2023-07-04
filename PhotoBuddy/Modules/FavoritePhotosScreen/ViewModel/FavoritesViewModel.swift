@@ -41,7 +41,9 @@ final class FavoritesViewModel:FavoritesViewModelProtocol {
                     let url = photoInfo.url,
                     let authorName = photoInfo.authorName
                 else { continue }
-                let briefPhotoInfo = BriefPhotoInfo(id: id, blurHash: blurHash, url: url, authorName: authorName)
+                let width = Int(photoInfo.width)
+                let height = Int(photoInfo.height)
+                let briefPhotoInfo = BriefPhotoInfo(id: id, width: width, height: height, blurHash: blurHash, url: url, authorName: authorName)
                 photoInfoList.append(briefPhotoInfo)
             }
             

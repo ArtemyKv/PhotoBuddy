@@ -2,7 +2,7 @@
 //  CachedBriefPhotoInfo+CoreDataProperties.swift
 //  PhotoBuddy
 //
-//  Created by Artem Kvashnin on 24.11.2022.
+//  Created by Artem Kvashnin on 03.07.2023.
 //
 //
 
@@ -21,6 +21,8 @@ extension CachedBriefPhotoInfo {
     @NSManaged public var blurHash: String?
     @NSManaged public var photoID: String?
     @NSManaged public var url: URL?
+    @NSManaged public var width: Int64
+    @NSManaged public var height: Int64
 
 }
 

@@ -21,17 +21,17 @@ class PhotoCell: UICollectionViewCell {
         photoView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            photoView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            photoView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            photoView.topAnchor.constraint(equalTo: self.topAnchor),
-            photoView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            photoView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            photoView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            photoView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            photoView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
         ])
     }
     
-    //TODO: - Set default image for reuse
-//    override func prepareForReuse() {
-//
-//    }
+//    TODO: - Set default image for reuse
+    override func prepareForReuse() {
+        photoView.image = nil
+    }
     
     override init(frame: CGRect) {
         super .init(frame: frame)

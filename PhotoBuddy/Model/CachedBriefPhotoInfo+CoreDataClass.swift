@@ -2,7 +2,7 @@
 //  CachedBriefPhotoInfo+CoreDataClass.swift
 //  PhotoBuddy
 //
-//  Created by Artem Kvashnin on 24.11.2022.
+//  Created by Artem Kvashnin on 03.07.2023.
 //
 //
 
