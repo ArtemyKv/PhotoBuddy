@@ -73,9 +73,7 @@ class SearchResultsViewController: UIViewController {
     
     func cellRegistration() -> UICollectionView.CellRegistration<PhotoCell, CellViewModel> {
         let cellRegistration = UICollectionView.CellRegistration<PhotoCell, CellViewModel> { cell, indexPath, cellViewModel in
-            cellViewModel.bindPhoto { image in
-                cell.photoView.image = image
-            }
+            cell.setCellViewModel(cellViewModel)
         }
         return cellRegistration
     }

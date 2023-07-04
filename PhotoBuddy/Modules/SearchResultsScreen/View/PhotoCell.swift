@@ -9,12 +9,31 @@ import Foundation
 import UIKit
 
 class PhotoCell: UICollectionViewCell {
-    var photoView: UIImageView = {
+    private var cellViewModel: CellViewModelProtocol? {
+        didSet {
+            guard let cellViewModel else { return }
+            cellViewModel.bindPhoto { [weak self] image in
+                self?.photoView.image = image
+            }
+        }
+    }
+    
+    private var photoView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()
+    
+    override init(frame: CGRect) {
+        super .init(frame: frame)
+        setupCell()
+    }
+    
+    required init?(coder: NSCoder) {
+        super .init(coder: coder)
+        setupCell()
+    }
     
     private func setupCell() {
         self.contentView.addSubview(photoView)
@@ -28,18 +47,14 @@ class PhotoCell: UICollectionViewCell {
         ])
     }
     
-//    TODO: - Set default image for reuse
     override func prepareForReuse() {
         photoView.image = nil
+        cellViewModel?.removeBindings()
+        cellViewModel = nil
+        
     }
     
-    override init(frame: CGRect) {
-        super .init(frame: frame)
-        setupCell()
-    }
-    
-    required init?(coder: NSCoder) {
-        super .init(coder: coder)
-        setupCell()
+    func setCellViewModel(_ cellViewModel: CellViewModelProtocol?) {
+        self.cellViewModel = cellViewModel
     }
 }

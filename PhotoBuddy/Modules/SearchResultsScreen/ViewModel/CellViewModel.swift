@@ -16,6 +16,7 @@ protocol CellViewModelProtocol: AnyObject {
     
     func bindPhoto(_ binding: PhotoBinding?)
     func bindAuthorName(_ binding: StringBinding?)
+    func removeBindings()
     
 }
 
@@ -55,6 +56,12 @@ final class CellViewModel: CellViewModelProtocol {
     
     func bindAuthorName(_ binding: StringBinding?) {
         authorName.bind(listener: binding)
+    }
+    
+    func removeBindings() {
+        photo.listener = nil
+        authorName.listener = nil
+        creatinDate.listener = nil
     }
 }
 
